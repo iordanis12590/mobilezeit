@@ -37,6 +37,8 @@ dependencies {
     compile 'com.googlecode.objectify:objectify:5.1.5'
     compile 'javax.servlet:servlet-api:2.5' // GAE works with only with 2.5
     compile 'commons-fileupload:commons-fileupload:1.2'
+    compile 'com.google.appengine:appengine-endpoints:1.9.18'
+    compile 'com.google.appengine:appengine-endpoints-deps:1.9.18'
 
     // testing dependencies
     testCompile 'com.google.appengine:appengine-testing:' + gaeVersion
@@ -59,5 +61,10 @@ appengine {
     appcfg {
         oauth2 = true
         noCookies = false
+    }
+    
+    endpoints {
+        getClientLibsOnBuild = true
+        getDiscoveryDocsOnBuild = true
     }
 }
