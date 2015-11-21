@@ -21,8 +21,13 @@
 package org.wahlzeit.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +41,13 @@ public class StringUtil {
 	 */
 	private static final String URL_SEPARATOR = "/";
 
+	
+	/**
+	 * The String pointing to the path where the text files are being stored
+	 */
+	private static String FILE_PATH = "src/main/webapp/config/text/";
+	private static Charset CHARSET = StandardCharsets.UTF_8;
+	
 	/**
 	 *
 	 */
@@ -167,6 +179,14 @@ public class StringUtil {
 		} catch (MalformedURLException ex) {
 			throw new IllegalArgumentException("invalid URL string");
 		}
+	}
+
+	/**
+	 * 
+	 */
+	static String readFile(String fileInPath) throws IOException {
+		byte[] encoded = Files.readAllBytes(Paths.get(FILE_PATH + fileInPath));
+		return new String(encoded, CHARSET);
 	}
 
 }
