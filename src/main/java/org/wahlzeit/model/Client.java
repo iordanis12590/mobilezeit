@@ -80,7 +80,7 @@ public abstract class Client implements Serializable, Persistent {
 	/**
 	 *
 	 */
-	Client() {
+	protected Client() {
 		// do nothing
 	}
 

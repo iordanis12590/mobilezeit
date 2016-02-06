@@ -8,17 +8,17 @@ import com.google.api.server.spi.config.Named;
 import org.wahlzeit.api.About;
 
 
-@Api(name="aboutapi",
+@Api(name="wahlzeitApi",
 	version = "v1",
-	description = "An API to get the about text"
+	description = "A multiclient API for Whalzeit"
 	)
-public class AboutAPI {
+public class AboutEndpoint {
 	
 	private static String defaultAboutText = "This site lets you show, discuss, and praise photos. You can upload your own photos and you can search for specific photos.";
 	private static About defaultAbout = new About(defaultAboutText);
 	
 	
-	@ApiMethod(name="get")
+	@ApiMethod(name="getAbout")
 	public About getDefaultAbout() {
 		return defaultAbout;
 	}
