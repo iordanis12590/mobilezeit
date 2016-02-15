@@ -1,5 +1,9 @@
 package org.wahlzeit.handlers;
 
+import com.google.appengine.api.oauth.OAuthRequestException;
+import com.google.appengine.api.oauth.OAuthService;
+import com.google.appengine.api.oauth.OAuthServiceFactory;
+import com.google.appengine.api.oauth.OAuthServiceFailureException;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import org.wahlzeit.model.AccessRights;
@@ -11,7 +15,9 @@ import org.wahlzeit.model.UserSession;
 import org.wahlzeit.services.LogBuilder;
 import org.wahlzeit.webparts.WebPart;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -39,7 +45,32 @@ public class LoginFormHandler extends AbstractWebFormHandler {
 	@Override
 	protected String doHandleGet(UserSession us, String link, Map args) {
 		log.info("Link: " + link);
-
+		
+		
+		OAuthService oauth = OAuthServiceFactory.getOAuthService();
+		String scope = "https://www.googleapis.com/auth/userinfo.email";
+		Set<String> allowedClients = new HashSet<>();
+		allowedClients.add("326325117092-mpckcvum5182l7udgu6sq5du1ivmeo6a.apps.googleusercontent.com"); // list your client ids here
+		
+		try {
+			com.google.appengine.api.users.User OauthUser = oauth.getCurrentUser(scope);
+			String OauthUserId = OauthUser.getUserId();
+			String OauthUserEmail = OauthUser.getEmail();
+			String tokenAudience = oauth.getClientId(scope);
+			if (!allowedClients.contains(tokenAudience)) {
+		    throw new OAuthRequestException("audience of token '" + tokenAudience
+		        + "' is not in allowed list " + allowedClients);
+		  }
+		  // proceed with authenticated user
+		  // ...
+		} catch (OAuthRequestException ex) {
+		  // handle auth error
+		  // ...
+		} catch (OAuthServiceFailureException ex) {
+		  // optionally, handle an oauth service failure
+		  // ...
+		}
+		
 		UserService userService = UserServiceFactory.getUserService();
 		com.google.appengine.api.users.User googleUser = userService.getCurrentUser();
 

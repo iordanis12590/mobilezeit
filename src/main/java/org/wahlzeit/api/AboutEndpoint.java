@@ -4,6 +4,9 @@ import com.google.api.server.spi.config.Api;
 
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.google.appengine.api.users.User;
+
+import static com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID;
 
 import org.wahlzeit.api.About;
 
@@ -18,8 +21,19 @@ public class AboutEndpoint {
 	private static About defaultAbout = new About(defaultAboutText);
 	
 	
-	@ApiMethod(name="getAbout")
-	public About getDefaultAbout() {
-		return defaultAbout;
+	@ApiMethod(name="getAbout", clientIds = {
+            Constants.WEB_CLIENT_ID,
+            Constants.ANDROID_CLIENT_ID,
+            API_EXPLORER_CLIENT_ID },
+        audiences = { Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID },
+        scopes = {
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile" })
+	public About getDefaultAbout(User user) {
+		if (user == null) {
+			return new About("Hello unknown");
+		} else {
+			return defaultAbout;
+		}
 	}
 }

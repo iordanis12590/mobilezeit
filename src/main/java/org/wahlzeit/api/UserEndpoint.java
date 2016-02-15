@@ -1,10 +1,17 @@
 package org.wahlzeit.api;
 
+import static com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID;
+
+import org.wahlzeit.model.Client;
 import org.wahlzeit.model.Guest;
+
+import org.wahlzeit.model.UserManager;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
+import com.google.appengine.api.users.User;
 
 @Api(name="wahlzeitApi",
 version = "v1",
@@ -19,10 +26,39 @@ public class UserEndpoint {
 //		return new APIGuest();	
 //	}
 	
-	@ApiMethod(name = "create_guest", httpMethod="post")
-	public Guest createGuest(@Named("name") String name) {
-		return new Guest();
+	@ApiMethod(name = "guest", httpMethod="post")
+	public Guest createGuest(@Nullable @Named("name") String name) {
+		if ((name == null) || (name == "")) {
+			return new Guest();
+		}
+		return null;
 	}
 	
+	
+	@ApiMethod(name="user", httpMethod="post", clientIds = {
+            Constants.WEB_CLIENT_ID,
+            Constants.ANDROID_CLIENT_ID,
+            API_EXPLORER_CLIENT_ID },
+        audiences = { Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID },
+        scopes = {
+            "https://www.googleapis.com/auth/userinfo.email"})
+	public org.wahlzeit.model.User createUser(User user) {
+		UserManager um = UserManager.getInstance();
+		org.wahlzeit.model.User result = null;
+		if (user != null) {
+			// user already exists
+			result = um.getUserById(user.getUserId());
+			if (result == null) {
+				// create new user
+				result = new org.wahlzeit.model.User(user.getUserId(), user.getNickname(), user.getEmail());
+			}
+		}
+		return result;
+	}
+	
+//	@ApiMethod(name = "createGuest")
+//	public APIGuest createGuestUser() {
+//		return new APIGuest();	
+//	}
 	
 }
