@@ -45,7 +45,7 @@ public class StringUtil {
 	/**
 	 * The String pointing to the path where the text files are being stored
 	 */
-	private static String FILE_PATH = "src/main/webapp/config/text/";
+	public static String FILE_PATH = "src/main/webapp/config/text/";
 	private static Charset CHARSET = StandardCharsets.UTF_8;
 	
 	/**

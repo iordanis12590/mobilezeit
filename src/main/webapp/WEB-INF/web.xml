@@ -48,7 +48,6 @@
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 	
-	
 	<servlet>
         <servlet-name>SystemServiceServlet</servlet-name>
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
@@ -63,8 +62,28 @@
         <servlet-name>SystemServiceServlet</servlet-name>
         <url-pattern>/_ah/spi/*</url-pattern>
     </servlet-mapping> 
+	
+	<servlet>
+	    <servlet-name>AuthCallbackServlet</servlet-name>
+	    <servlet-class>org.wahlzeit.servlets.AuthCallbackServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AuthCallbackServlet</servlet-name>
+	    <url-pattern>/oauth2callback</url-pattern>
+	</servlet-mapping>
+	
 	<!--> Servlets end </-->
 
+<!-- <servlet> -->
+<!-- 	    <display-name>Remote API Servlet</display-name> -->
+<!-- 	    <servlet-name>RemoteApiServlet</servlet-name> -->
+<!-- 	    <servlet-class>com.google.apphosting.utils.remoteapi.RemoteApiServlet</servlet-class> -->
+<!-- 	    <load-on-startup>1</load-on-startup> -->
+<!-- 	</servlet> -->
+<!-- 	<servlet-mapping> -->
+<!-- 	    <servlet-name>RemoteApiServlet</servlet-name> -->
+<!-- 	    <url-pattern>/remote_api</url-pattern> -->
+<!-- 	</servlet-mapping>  -->
 
 	<!--> Tidy up servlets </-->
 	<servlet>

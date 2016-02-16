@@ -20,6 +20,7 @@
 
 package org.wahlzeit.model;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.utils.SystemProperty;
@@ -122,9 +123,11 @@ public abstract class AbstractModelConfig extends AbstractConfig implements Mode
 		String baseMenu = doGetValue("BaseMenuPart");
 		// there is no separate base menu
 
+//		GoogleAuthorizationCodeFlow authFlow;
+		
 		String loginMenu = doGetValue("GuestMenuPart");
 		UserService userService = UserServiceFactory.getUserService();
-		loginMenu = loginMenu.replace("$loginPageLink$", userService.createLoginURL("/" + PartUtil.LOGIN_FORM_NAME));
+		loginMenu = loginMenu.replace("$loginPageLink$", "/oauth2callback");//userService.createLoginURL("/" + PartUtil.LOGIN_FORM_NAME));
 		String guestMenu = baseMenu + menuDash + loginMenu;
 		doSetValue("GuestMenu", guestMenu);
 

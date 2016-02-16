@@ -47,29 +47,29 @@ public class LoginFormHandler extends AbstractWebFormHandler {
 		log.info("Link: " + link);
 		
 		
-		OAuthService oauth = OAuthServiceFactory.getOAuthService();
-		String scope = "https://www.googleapis.com/auth/userinfo.email";
-		Set<String> allowedClients = new HashSet<>();
-		allowedClients.add("326325117092-mpckcvum5182l7udgu6sq5du1ivmeo6a.apps.googleusercontent.com"); // list your client ids here
+//		OAuthService oauth = OAuthServiceFactory.getOAuthService();
+//		String scope = "https://www.googleapis.com/auth/userinfo.email";
+//		Set<String> allowedClients = new HashSet<>();
+//		allowedClients.add("326325117092-mpckcvum5182l7udgu6sq5du1ivmeo6a.apps.googleusercontent.com"); // list your client ids here
 		
-		try {
-			com.google.appengine.api.users.User OauthUser = oauth.getCurrentUser(scope);
-			String OauthUserId = OauthUser.getUserId();
-			String OauthUserEmail = OauthUser.getEmail();
-			String tokenAudience = oauth.getClientId(scope);
-			if (!allowedClients.contains(tokenAudience)) {
-		    throw new OAuthRequestException("audience of token '" + tokenAudience
-		        + "' is not in allowed list " + allowedClients);
-		  }
-		  // proceed with authenticated user
-		  // ...
-		} catch (OAuthRequestException ex) {
-		  // handle auth error
-		  // ...
-		} catch (OAuthServiceFailureException ex) {
-		  // optionally, handle an oauth service failure
-		  // ...
-		}
+//		try {
+//			com.google.appengine.api.users.User OauthUser = oauth.getCurrentUser(scope);
+//			String OauthUserId = OauthUser.getUserId();
+//			String OauthUserEmail = OauthUser.getEmail();
+//			String tokenAudience = oauth.getClientId(scope);
+//			if (!allowedClients.contains(tokenAudience)) {
+//		    throw new OAuthRequestException("audience of token '" + tokenAudience
+//		        + "' is not in allowed list " + allowedClients);
+//		  }
+//		  // proceed with authenticated user
+//		  // ...
+//		} catch (OAuthRequestException ex) {
+//		  // handle auth error
+//		  // ...
+//		} catch (OAuthServiceFailureException ex) {
+//		  // optionally, handle an oauth service failure
+//		  // ...
+//		}
 		
 		UserService userService = UserServiceFactory.getUserService();
 		com.google.appengine.api.users.User googleUser = userService.getCurrentUser();
