@@ -127,7 +127,7 @@ public abstract class AbstractModelConfig extends AbstractConfig implements Mode
 		
 		String loginMenu = doGetValue("GuestMenuPart");
 		UserService userService = UserServiceFactory.getUserService();
-		loginMenu = loginMenu.replace("$loginPageLink$", "/oauth2callback");//userService.createLoginURL("/" + PartUtil.LOGIN_FORM_NAME));
+		loginMenu = loginMenu.replace("$loginPageLink$", "/login"); //userService.createLoginURL("/" + PartUtil.LOGIN_FORM_NAME));
 		String guestMenu = baseMenu + menuDash + loginMenu;
 		doSetValue("GuestMenu", guestMenu);
 

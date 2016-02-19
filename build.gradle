@@ -39,6 +39,11 @@ dependencies {
     compile 'commons-fileupload:commons-fileupload:1.2'
     compile 'com.google.appengine:appengine-endpoints:1.9.18'
     compile 'com.google.appengine:appengine-endpoints-deps:1.9.18'
+    
+    compile 'com.google.apis:google-api-services-plus:v1-rev341-1.21.0'
+    compile 'com.google.apis:google-api-services-oauth2:v2-rev105-1.21.0'
+
+    
 
     // testing dependencies
     testCompile 'com.google.appengine:appengine-testing:' + gaeVersion

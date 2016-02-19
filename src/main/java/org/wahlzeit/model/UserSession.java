@@ -52,7 +52,7 @@ public class UserSession extends Session implements Serializable {
 	public static final String SAVED_ARGS = "savedArgs";
 	public static final String INITIALIZED = "initialized";
 	public static final String ANONYMOUS_CLIENT = "anon";
-
+	public static final String REFRESH_TOKEN = "refreshToken";
 
 	private static Logger log = Logger.getLogger(UserSession.class.getName());
 
@@ -137,7 +137,7 @@ public class UserSession extends Session implements Serializable {
 	public String getClientId() {
 		return (String) httpSession.getAttribute(CLIENT_ID);
 	}
-
+	
 	@Override
 	protected void notifyProcessingTimeChanged() {
 		httpSession.setAttribute(Session.PROCESSING_TIME, super.getProcessingTime());
@@ -165,6 +165,15 @@ public class UserSession extends Session implements Serializable {
 
 		httpSession.setAttribute(CLIENT_ID, newClient.getId());
 		UserManager.getInstance().addHttpSessionIdToClientMapping(httpSession.getId(), newClient);
+	}
+	
+	// set refresh token attribute to facilitate re-authentication
+	public void setRefreshToken(String refreshToken) {
+		httpSession.setAttribute(REFRESH_TOKEN, refreshToken);
+	}
+	
+	public String getRefreshToken() {
+		return (String) httpSession.getAttribute(REFRESH_TOKEN);
 	}
 
 	/**
