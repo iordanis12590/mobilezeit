@@ -28,10 +28,14 @@ public class UserEndpoint {
 	
 	@ApiMethod(name = "guest", httpMethod="post")
 	public Guest createGuest(@Nullable @Named("name") String name) {
-		if ((name == null) || (name == "")) {
-			return new Guest();
+		
+		Guest guest = new Guest();
+		guest.setLanguage(null);
+		if ((name != null) || (name == "")) {
+			guest.setNickName(name);
 		}
-		return null;
+		return guest;
+
 	}
 	
 	
@@ -47,6 +51,7 @@ public class UserEndpoint {
 		org.wahlzeit.model.User result = null;
 		if (user != null) {
 			// user already exists
+			org.wahlzeit.model.User userByEmail = um.getUserByEmailAddress(user.getEmail());
 			result = um.getUserById(user.getUserId());
 			if (result == null) {
 				// create new user
