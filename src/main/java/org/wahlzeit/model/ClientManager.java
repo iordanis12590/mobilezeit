@@ -42,7 +42,7 @@ public abstract class ClientManager extends ObjectManager {
 	public void addClient(Client client) throws IllegalArgumentException {
 		assertIsNonNullArgument(client);
 		assertIsUnknownClientAsIllegalArgument(client);
-		assertNicknameIsNotUsed(client.getNickName());
+		//assertNicknameIsNotUsed(client.getNickName());
 
 		doAddClient(client);
 	}
@@ -59,11 +59,11 @@ public abstract class ClientManager extends ObjectManager {
 	/**
 	 * @methodtype assertion
 	 */
-	protected void assertNicknameIsNotUsed(String nickName) {
-		if (listOfUsedNicknames.contains(nickName)) {
-			throw new IllegalArgumentException("Nickname " + nickName + " is already used.");
-		}
-	}
+//	protected void assertNicknameIsNotUsed(String nickName) {
+//		if (listOfUsedNicknames.contains(nickName)) {
+//			throw new IllegalArgumentException("Nickname " + nickName + " is already used.");
+//		}
+//	}
 
 	/**
 	 * @methodtype set
@@ -243,7 +243,7 @@ public abstract class ClientManager extends ObjectManager {
 	 * @methodtype set
 	 */
 	public void changeNickname(String oldNickName, String newNickName) throws IllegalArgumentException {
-		assertNicknameIsNotUsed(newNickName);
+		//assertNicknameIsNotUsed(newNickName);
 
 		listOfUsedNicknames.remove(oldNickName);
 		listOfUsedNicknames.add(newNickName);

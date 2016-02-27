@@ -4,7 +4,7 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 
-import org.wahlzeit.api.APIGuest;
+
 import org.wahlzeit.model.Administrator;
 import org.wahlzeit.model.Client;
 import org.wahlzeit.model.Globals;
@@ -34,10 +34,8 @@ public class OfyService {
 		factory().register(Administrator.class);
 		factory().register(Moderator.class);
 		factory().register(Client.class);
-		factory().register(APIGuest.class);
 		factory().register(PhotoCase.class);
 		factory().register(ImageWrapper.class);
-		factory().register(APIGuest.class);
 		factory().register(Guest.class);
 	}
 

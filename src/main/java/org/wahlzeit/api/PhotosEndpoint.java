@@ -25,7 +25,7 @@ public class PhotosEndpoint {
 	
 	//TODO: add cursor and limit parameters to limit transmitted data
 	// list all photos
-	@ApiMethod(name="photos", httpMethod="get", path="photos/")
+	@ApiMethod(name="photos.list", httpMethod="get", path="photos/")
 	public Collection<Photo> listAllPhotos() {
 		Collection<Photo> result;
 		PhotoManager photoManager = PhotoManager.getInstance();
