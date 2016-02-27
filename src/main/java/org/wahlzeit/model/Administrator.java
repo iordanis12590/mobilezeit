@@ -44,6 +44,9 @@ public class Administrator extends Moderator {
 		initialize(userId, nickName, emailAddress, AccessRights.ADMINISTRATOR, previousClient);
 	}
 
+	public Administrator(String userId, String nickName, String emailAddress) {
+		initialize(userId, nickName, EmailAddress.getFromString(emailAddress), AccessRights.ADMINISTRATOR, null);
+	}
 	/**
 	 *
 	 */
