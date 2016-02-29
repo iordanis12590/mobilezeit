@@ -51,18 +51,11 @@ public class UserEndpoint {
             "https://www.googleapis.com/auth/userinfo.email" })
 	public Client createClient(com.google.appengine.api.users.User user, @Nullable Client wahlzeitClient) {
 		Client result = null;
-		UserManager um = UserManager.getInstance();
 		if(user != null) {
 			if (wahlzeitClient.getAccessRights().toString().equals("ADMINISTRATOR")) {
-				result = (Administrator) um.getUserById(wahlzeitClient.getId());
-				if(result == null) {
-					result = new Administrator(wahlzeitClient.getId(), wahlzeitClient.getNickName(), user.getEmail());
-				}
+				result = createAuthorizedClient(true, wahlzeitClient.getId(), wahlzeitClient.getNickName(), user.getEmail());
 			} else if (wahlzeitClient.getAccessRights().toString().equals("USER")) {
-				result = um.getUserById(wahlzeitClient.getId());
-				if(result == null)  {
-					result = new User(wahlzeitClient.getId(), wahlzeitClient.getNickName(), user.getEmail());
-				}
+				result = createAuthorizedClient(false, wahlzeitClient.getId(), wahlzeitClient.getNickName(), user.getEmail());
 			}
 		} else {
 			result = new Guest();
@@ -70,86 +63,17 @@ public class UserEndpoint {
 		return result;
 	}
 	
-	@ApiMethod(name="clients.administrators", 
-			path = "clients/administrators/",
-			clientIds = {
-            Constants.WEB_CLIENT_ID,
-            Constants.ANDROID_CLIENT_ID,
-            API_EXPLORER_CLIENT_ID },
-        audiences = { Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID },
-        scopes = {
-            "https://www.googleapis.com/auth/userinfo.email" })
-	public Client createAdministrator(com.google.appengine.api.users.User user, @Nullable Administrator wahlzeitUser) {
-		Administrator result = null;
-		if(user != null) {
-			UserManager um = UserManager.getInstance();
-			result = (Administrator) um.getUserById(wahlzeitUser.getId());
-			if(result == null && wahlzeitUser != null) {
-				//um.addClient(wahlzeitUser);
-				result = new Administrator(wahlzeitUser.getId(), wahlzeitUser.getNickName(), user.getEmail());
-			}
-			
-		}
-		return result;
-	}
-	
-	@ApiMethod(name="clients.users", 
-			path = "clients/users/",
-			clientIds = {
-            Constants.WEB_CLIENT_ID,
-            Constants.ANDROID_CLIENT_ID,
-            API_EXPLORER_CLIENT_ID },
-        audiences = { Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID },
-        scopes = {
-            "https://www.googleapis.com/auth/userinfo.email" })
-	public Client createUser(com.google.appengine.api.users.User user, @Nullable User wahlzeitUser) {
-		User result = null;
-		if(user != null) {
-			UserManager um = UserManager.getInstance();
-			result = um.getUserById(wahlzeitUser.getId());
-			if(result == null && wahlzeitUser != null) {
-				//um.addClient(wahlzeitUser);
-				result = new User(wahlzeitUser.getId(), wahlzeitUser.getNickName(), user.getEmail());
-			}
-			
-		}
-		return result;
-	}
-	
-	
-	@ApiMethod(name="clients.guests", 
-			path = "clients/guests/",
-			clientIds = {
-            Constants.WEB_CLIENT_ID,
-            Constants.ANDROID_CLIENT_ID,
-            API_EXPLORER_CLIENT_ID },
-        audiences = { Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID },
-        scopes = {
-            "https://www.googleapis.com/auth/userinfo.email" })
-	public Client createGuest(com.google.appengine.api.users.User user, @Nullable Guest wahlzeitGuest) {
-		org.wahlzeit.model.Guest result = null; 		
+	private Client createAuthorizedClient(boolean createAdmin, String userId, String userName, String email) {
+		Client result = null;
 		UserManager um = UserManager.getInstance();
-		result = new Guest();
-		
+		result =  um.getUserById(userId);
+		if (result == null && createAdmin) {
+			result = new Administrator(userId, userName, email);
+		} else {
+			result = new User(userId, userName, email);
+		}
 		return result;
 	}
-	
-//	@ApiMethod(name="clients.guests", 
-//			path = "clients/guests/",
-//			httpMethod = HttpMethod.GET
-//			 )
-//	public Client createGuest() {
-//		org.wahlzeit.model.Guest result = null;
-//		
-//		UserManager um = UserManager.getInstance();
-//		result = new Guest();
-//		
-//		return result;
-//	}
-	
-//	@ApiMethod(name = "createGuest")
-//	public APIGuest createGuestUser() {
-//		return new APIGuest();	
-//	}
+
 	
 }
