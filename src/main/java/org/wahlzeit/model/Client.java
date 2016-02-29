@@ -20,6 +20,8 @@
 
 package org.wahlzeit.model;
 
+import com.google.api.server.spi.config.AnnotationBoolean;
+import com.google.api.server.spi.config.ApiResourceProperty;
 import com.google.appengine.api.datastore.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -39,7 +41,7 @@ import java.util.List;
  * administrator clients.
  */
 @Entity
-public abstract class Client implements Serializable, Persistent {
+public class Client implements Serializable, Persistent {
 
 	public static final String ID = "id";
 	public static final String NICK_NAME = "nickName";
@@ -68,6 +70,7 @@ public abstract class Client implements Serializable, Persistent {
 
 	private String httpSessionId;
 
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	protected Language language = Language.ENGLISH;
 
 	protected PhotoSize photoSize = PhotoSize.MEDIUM;

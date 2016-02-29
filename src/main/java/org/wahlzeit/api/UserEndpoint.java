@@ -10,6 +10,7 @@ import org.wahlzeit.model.UserManager;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
 
@@ -39,6 +40,36 @@ public class UserEndpoint {
 //
 //	}
 	
+	@ApiMethod(name="clients.create", 
+			path = "clients/",
+			clientIds = {
+            Constants.WEB_CLIENT_ID,
+            Constants.ANDROID_CLIENT_ID,
+            API_EXPLORER_CLIENT_ID },
+        audiences = { Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID },
+        scopes = {
+            "https://www.googleapis.com/auth/userinfo.email" })
+	public Client createClient(com.google.appengine.api.users.User user, @Nullable Client wahlzeitClient) {
+		Client result = null;
+		UserManager um = UserManager.getInstance();
+		if(user != null) {
+			if (wahlzeitClient.getAccessRights().toString().equals("ADMINISTRATOR")) {
+				result = (Administrator) um.getUserById(wahlzeitClient.getId());
+				if(result == null) {
+					result = new Administrator(wahlzeitClient.getId(), wahlzeitClient.getNickName(), user.getEmail());
+				}
+			} else if (wahlzeitClient.getAccessRights().toString().equals("USER")) {
+				result = um.getUserById(wahlzeitClient.getId());
+				if(result == null)  {
+					result = new User(wahlzeitClient.getId(), wahlzeitClient.getNickName(), user.getEmail());
+				}
+			}
+		} else {
+			result = new Guest();
+		}
+		return result;
+	}
+	
 	@ApiMethod(name="clients.administrators", 
 			path = "clients/administrators/",
 			clientIds = {
@@ -48,7 +79,7 @@ public class UserEndpoint {
         audiences = { Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID },
         scopes = {
             "https://www.googleapis.com/auth/userinfo.email" })
-	public Administrator createAdministrator(com.google.appengine.api.users.User user, @Nullable Administrator wahlzeitUser) {
+	public Client createAdministrator(com.google.appengine.api.users.User user, @Nullable Administrator wahlzeitUser) {
 		Administrator result = null;
 		if(user != null) {
 			UserManager um = UserManager.getInstance();
@@ -71,7 +102,7 @@ public class UserEndpoint {
         audiences = { Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID },
         scopes = {
             "https://www.googleapis.com/auth/userinfo.email" })
-	public User createUser(com.google.appengine.api.users.User user, @Nullable User wahlzeitUser) {
+	public Client createUser(com.google.appengine.api.users.User user, @Nullable User wahlzeitUser) {
 		User result = null;
 		if(user != null) {
 			UserManager um = UserManager.getInstance();
@@ -85,17 +116,36 @@ public class UserEndpoint {
 		return result;
 	}
 	
-	@ApiMethod(name="clients.guests",
-			httpMethod="post",
-			path = "clients/guests/")
-	public Guest createGuest() {
-		org.wahlzeit.model.Guest result = null;
-		
+	
+	@ApiMethod(name="clients.guests", 
+			path = "clients/guests/",
+			clientIds = {
+            Constants.WEB_CLIENT_ID,
+            Constants.ANDROID_CLIENT_ID,
+            API_EXPLORER_CLIENT_ID },
+        audiences = { Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID },
+        scopes = {
+            "https://www.googleapis.com/auth/userinfo.email" })
+	public Client createGuest(com.google.appengine.api.users.User user, @Nullable Guest wahlzeitGuest) {
+		org.wahlzeit.model.Guest result = null; 		
 		UserManager um = UserManager.getInstance();
 		result = new Guest();
 		
 		return result;
 	}
+	
+//	@ApiMethod(name="clients.guests", 
+//			path = "clients/guests/",
+//			httpMethod = HttpMethod.GET
+//			 )
+//	public Client createGuest() {
+//		org.wahlzeit.model.Guest result = null;
+//		
+//		UserManager um = UserManager.getInstance();
+//		result = new Guest();
+//		
+//		return result;
+//	}
 	
 //	@ApiMethod(name = "createGuest")
 //	public APIGuest createGuestUser() {
