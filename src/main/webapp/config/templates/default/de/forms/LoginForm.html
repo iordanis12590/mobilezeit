@@ -1,0 +1,26 @@
+<form action="loginForm.form" method="post" name="loginForm">
+
+	<h2>Logg dich ein!</h2>
+	<p><b>{$message}</b></p>
+	<p>Wahlzeit lässt euch mit Sicherheit unter Nutzung eines Authentifizierungs-Requests auf der Basis des OAuth-Protokolls, durch Ihrem Google-Konto einloggen</p>
+
+	<table class="border"><tr><td class="spacer"><table class="form">
+		<tr>
+			<td class="twoCol1">Zugangsrechte:&nbsp;</td>
+			<td class="twoCol2">
+				<select name="accessRights">
+					<option value="user" {$userAccessTypeSelected}>User</option>
+					<option value="administrator" {$administratorAccessTypeSelected}>Administrator</option>
+				</select>
+			</td>
+			
+		</tr>
+		<tr>
+			<td class="twoCol1">&nbsp;</td>
+			<td class="twoCol2">
+				<input type="submit" name="login" value="Weiter zu Oauth2 login" />
+			</td>
+		</tr>
+	</table></td></tr></table>
+
+</form>

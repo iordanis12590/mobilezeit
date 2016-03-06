@@ -28,6 +28,8 @@ import org.wahlzeit.services.SessionManager;
 import org.wahlzeit.utils.StringUtil;
 import org.wahlzeit.webparts.WebPart;
 
+import com.google.api.client.http.GenericUrl;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +38,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -168,10 +172,18 @@ public abstract class AbstractServlet extends HttpServlet {
 	 *
 	 */
 	protected void redirectRequest(HttpServletResponse response, String link) throws IOException {
-		response.setContentType("text/html");
-		String newTarget = new String("/" + link + ".html");
-		log.config(LogBuilder.createSystemMessage().addParameter("Redirect to", newTarget).toString());
-		response.sendRedirect(newTarget);
+		String redirectionTarget = link;
+		// determine if string is a valid URL
+		try {
+			URL url = new URL(link);
+		} catch (MalformedURLException e) {
+			//redirect locally
+			response.setContentType("text/html");
+			redirectionTarget = new String("/" + link + ".html");
+		}
+			
+		log.config(LogBuilder.createSystemMessage().addParameter("Redirect to", redirectionTarget).toString());
+		response.sendRedirect(redirectionTarget);
 	}
 
 	/**
