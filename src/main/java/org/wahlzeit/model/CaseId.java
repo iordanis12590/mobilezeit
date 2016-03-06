@@ -20,10 +20,12 @@
 
 package org.wahlzeit.model;
 
+import java.io.Serializable;
+
 /**
  * Simple value object for case ids.
  */
-public class CaseId {
+public class CaseId implements Serializable {
 
 	/**
 	 *

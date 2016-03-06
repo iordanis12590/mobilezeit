@@ -80,7 +80,7 @@ public class PhotoCaseManager extends ObjectManager {
 	/**
 	 * @methodtype get
 	 */
-	public PhotoCase getPhotoCase(PhotoId id) {
+	public PhotoCase getPhotoCase(CaseId id) {
 		PhotoCase result = openPhotoCases.get(id);
 		if (result == null) {
 			result = readObject(PhotoCase.class, PhotoCase.ID, id);
