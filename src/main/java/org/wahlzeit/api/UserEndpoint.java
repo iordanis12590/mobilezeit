@@ -23,23 +23,6 @@ public class UserEndpoint {
 	
 	private static final String APIGUEST_PREFIX = "api_guest#";
 	
-//	@ApiMethod(name = "guest.create")
-//	public APIGuest createGuestUser() {
-//		return new APIGuest();	
-//	}
-	
-//	@ApiMethod(name = "guest", httpMethod="post")
-//	public Guest createGuest(@Nullable @Named("name") String name) {
-//		
-//		Guest guest = new Guest();
-//		guest.setLanguage(null);
-//		if ((name != null) || (name == "")) {
-//			guest.setNickName(name);
-//		}
-//		return guest;
-//
-//	}
-	
 	@ApiMethod(name="clients.create", 
 			path = "clients/",
 			clientIds = {
