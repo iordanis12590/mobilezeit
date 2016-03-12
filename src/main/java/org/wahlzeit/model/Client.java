@@ -27,15 +27,14 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Parent;
+
+import org.wahlzeit.api.Constants;
 import org.wahlzeit.services.EmailAddress;
 import org.wahlzeit.services.Language;
 import org.wahlzeit.services.ObjectManager;
 import org.wahlzeit.services.Persistent;
 
 import java.io.Serializable;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +48,6 @@ public class Client implements Serializable, Persistent {
 	public static final String ID = "id";
 	public static final String NICK_NAME = "nickName";
 	public static final String LANGUAGE = "language";
-	private static final String RESOURCE_PREFIX = "clients";
 	
 	@Id
 	protected String id;
@@ -101,9 +99,7 @@ public class Client implements Serializable, Persistent {
 		this.id = id;
 		this.nickName = nickName;
 		this.accessRights = accessRights;
-		this.emailAddress = emailAddress;
-		this.resourceId = RESOURCE_PREFIX + "/" + id;
-		
+		this.emailAddress = emailAddress;		
 		// use some of the existing properties for the new user
 		if (previousClient != null) {
 			this.setLanguage(previousClient.getLanguage());
@@ -355,5 +351,10 @@ public class Client implements Serializable, Persistent {
 	
 	public String getResourceId() {
 		return resourceId;
+	}
+	
+
+	public void setResourceId(String siteUrl) {
+		this.resourceId = siteUrl  + "_ah/spi/" + "clients/" + this.id;
 	}
 }

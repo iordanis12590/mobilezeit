@@ -58,6 +58,14 @@ public class Tags implements Serializable {
 	 */
 	protected Set<String> tags = new TreeSet<String>();
 
+	public Set<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(Set<String> tags) {
+		this.tags = tags;
+	}
+
 	/**
 	 *
 	 */

@@ -22,6 +22,9 @@ package org.wahlzeit.services;
 
 import java.io.Serializable;
 
+import com.google.api.server.spi.config.AnnotationBoolean;
+import com.google.api.server.spi.config.ApiResourceProperty;
+
 /**
  * A simple abstract implementation of Persistent with write count and dirty bit.
  * Also defines (but does not use) the field "ID" for subclass use.
@@ -41,6 +44,7 @@ public abstract class DataObject implements Persistent, Serializable {
 	/**
 	 *
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	public final boolean isDirty() {
 		return writeCount != 0;
 	}

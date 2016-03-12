@@ -84,6 +84,7 @@ public class AuthCallbackServlet extends AbstractServlet {
     	    } else {
     	    	wahlzeitUser = new Administrator(userId, name, email, previousClient);
     	    }
+    	    wahlzeitUser.setResourceId(us.getSiteUrl());
     	    //TODO set more attributes: gender, profile pic etc.
     	    userManager.emailWelcomeMessage(us, wahlzeitUser);
     	    us.setClient(wahlzeitUser);
