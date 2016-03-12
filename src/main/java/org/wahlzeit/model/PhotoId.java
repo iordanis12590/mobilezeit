@@ -23,6 +23,9 @@ package org.wahlzeit.model;
 import java.io.Serializable;
 import java.util.Random;
 
+import com.google.api.server.spi.config.AnnotationBoolean;
+import com.google.api.server.spi.config.ApiResourceProperty;
+
 /**
  * A photo id identifies a photo with a unique number.
  * The number has an equivalent string for web access. 
@@ -34,7 +37,7 @@ public class PhotoId implements Serializable {
 	 * 0 is never returned from nextValue; first value is 1
 	 */
 	protected static int currentId = 0;
-
+	
 	/**
 	 *
 	 */
@@ -43,6 +46,7 @@ public class PhotoId implements Serializable {
 	/**
 	 *
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	public static final PhotoId NULL_ID = new PhotoId(0);
 
 	/**
@@ -147,6 +151,14 @@ public class PhotoId implements Serializable {
 	protected int value = 0;
 	protected String stringValue = null;
 
+	public String getStringValue() {
+		return stringValue;
+	}
+
+	public void setStringValue(String stringValue) {
+		this.stringValue = stringValue;
+	}
+
 	/**
 	 *
 	 */
@@ -186,6 +198,7 @@ public class PhotoId implements Serializable {
 	/**
 	 *
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	public boolean isNullId() {
 		return this == NULL_ID;
 	}

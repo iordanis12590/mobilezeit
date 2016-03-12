@@ -33,6 +33,9 @@ import org.wahlzeit.services.ObjectManager;
 import org.wahlzeit.services.Persistent;
 
 import java.io.Serializable;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,9 +49,12 @@ public class Client implements Serializable, Persistent {
 	public static final String ID = "id";
 	public static final String NICK_NAME = "nickName";
 	public static final String LANGUAGE = "language";
-
+	private static final String RESOURCE_PREFIX = "clients";
+	
 	@Id
 	protected String id;
+	
+	protected String resourceId;
 
 	protected String nickName;
 
@@ -68,9 +74,9 @@ public class Client implements Serializable, Persistent {
 	@Ignore
 	protected int writeCount = 0;
 
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	private String httpSessionId;
 
-	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	protected Language language = Language.ENGLISH;
 
 	protected PhotoSize photoSize = PhotoSize.MEDIUM;
@@ -96,7 +102,8 @@ public class Client implements Serializable, Persistent {
 		this.nickName = nickName;
 		this.accessRights = accessRights;
 		this.emailAddress = emailAddress;
-
+		this.resourceId = RESOURCE_PREFIX + "/" + id;
+		
 		// use some of the existing properties for the new user
 		if (previousClient != null) {
 			this.setLanguage(previousClient.getLanguage());
@@ -192,6 +199,7 @@ public class Client implements Serializable, Persistent {
 	/**
 	 *
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	public boolean isDirty() {
 		return writeCount != 0;
 	}
@@ -256,6 +264,7 @@ public class Client implements Serializable, Persistent {
 	/**
 	 * @methodtype get
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	public ModelConfig getLanguageConfiguration() {
 		return LanguageConfigs.get(language);
 	}
@@ -299,6 +308,7 @@ public class Client implements Serializable, Persistent {
 	/**
 	 * @methodtype get
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	public Photo getLastPraisedPhoto() {
 		int indexOfLastPraisedPhoto = praisedPhotoIds.size() - 1;
 		Photo result = null;
@@ -341,5 +351,9 @@ public class Client implements Serializable, Persistent {
 		if (!skippedPhotoIds.contains(skippedPhotoId)) {
 			skippedPhotoIds.add(skippedPhotoId);
 		}
+	}
+	
+	public String getResourceId() {
+		return resourceId;
 	}
 }

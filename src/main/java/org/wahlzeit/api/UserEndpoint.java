@@ -2,6 +2,7 @@ package org.wahlzeit.api;
 
 import static com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID;
 
+import org.wahlzeit.model.AccessRights;
 import org.wahlzeit.model.Administrator;
 import org.wahlzeit.model.Client;
 import org.wahlzeit.model.Guest;
@@ -50,13 +51,13 @@ public class UserEndpoint {
 		Client result = null;
 		UserManager um = UserManager.getInstance();
 		result =  um.getUserById(userId);
-		if (result == null && createAdmin) {
-			result = new Administrator(userId, userName, email);
+		if (result == null) {
+			result = createAdmin ? new Administrator(userId, userName, email) : new User(userId, userName, email);
 		} else {
-			result = new User(userId, userName, email);
+			//switch user rights
+			result.setAccessRights(createAdmin ? AccessRights.ADMINISTRATOR : AccessRights.USER);
 		}
 		return result;
 	}
-
 	
 }

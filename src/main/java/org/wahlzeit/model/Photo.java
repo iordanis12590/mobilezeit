@@ -21,6 +21,8 @@
 package org.wahlzeit.model;
 
 import com.google.api.client.util.ArrayMap;
+import com.google.api.server.spi.config.AnnotationBoolean;
+import com.google.api.server.spi.config.ApiResourceProperty;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.images.Image;
 import com.googlecode.objectify.annotation.Entity;
@@ -93,6 +95,7 @@ public class Photo extends DataObject {
 	 */
 	protected int width;
 	protected int height;
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	protected PhotoSize maxPhotoSize = PhotoSize.MEDIUM; // derived
 	
 	/**

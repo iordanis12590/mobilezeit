@@ -20,6 +20,8 @@
 
 package org.wahlzeit.model;
 
+import com.google.api.server.spi.config.AnnotationBoolean;
+import com.google.api.server.spi.config.ApiResourceProperty;
 import com.google.appengine.api.images.Image;
 import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Subclass;
@@ -74,11 +76,13 @@ public class User extends Client {
 	protected Photo userPhoto = null;
 	protected Set<Photo> photos = new HashSet<Photo>();
 	@Ignore // only used as temporary variable
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	protected Image uploadedImage = null;
 
 	/**
 	 *
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	protected long creationTime = System.currentTimeMillis();
 
 
@@ -268,6 +272,7 @@ public class User extends Client {
 	/**
 	 * @methodtype conversion
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	public Photo[] getPhotosReverseOrderedByPraise() {
 		Photo[] result = photos.toArray(new Photo[0]);
 		Arrays.sort(result, getPhotoByPraiseReverseComparator());

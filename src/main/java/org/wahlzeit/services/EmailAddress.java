@@ -88,6 +88,14 @@ public class EmailAddress implements Serializable {
 	public String asString() {
 		return value;
 	}
+	
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
 
 	/**
 	 *
