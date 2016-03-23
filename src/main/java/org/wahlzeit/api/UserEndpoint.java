@@ -114,7 +114,7 @@ public class UserEndpoint {
 	private Client createAuthorizedClient(boolean createAdmin, String userId, String userName, String email) {
 		Client result = null;
 		UserManager um = UserManager.getInstance();
-
+		result = um.getUserById(userId);
 		if (result == null) {
 			result = createAdmin ? new Administrator(userId, userName, email) : new User(userId, userName, email);
 		} else {
