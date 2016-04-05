@@ -1,21 +1,28 @@
 package org.wahlzeit.api;
 
 import java.awt.List;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.imageio.ImageIO;
 
+import org.wahlzeit.agents.AsyncTaskExecutor;
+import org.wahlzeit.model.Client;
 import org.wahlzeit.model.Photo;
 import org.wahlzeit.model.PhotoId;
 import org.wahlzeit.model.PhotoManager;
 import org.wahlzeit.model.PhotoSize;
 import org.wahlzeit.model.UserManager;
+import org.wahlzeit.model.User;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.appengine.api.images.Image;
-import com.google.appengine.api.users.User;
+import com.google.appengine.api.images.ImagesServiceFactory;
 
 @Api(name="wahlzeitApi",
 version = "v1",
@@ -36,6 +43,35 @@ public class PhotosEndpoint {
 		
 		return result;
 	}
+	
+	@ApiMethod(name="photos.upload", path="photos/")
+	public Photo createPhoto(Photo photo) {
+		Photo result = null;
+		
+        byte[] decodedString = photo.decodeBlobImage();
+        Image image = ImagesServiceFactory.makeImage(decodedString);
+		
+        
+		PhotoManager pm = PhotoManager.getInstance();
+		UserManager um = UserManager.getInstance();
+		User user = um.getUserById(photo.getOwnerId());
+				
+		try {
+			
+			result = pm.createPhoto(photo.getEnding(), image);
+			user.addPhoto(result);
+			result.setTags(photo.getTags());
+			pm.savePhoto(result);
+
+//			AsyncTaskExecutor.savePhotoAsync(photo.getId().asString());
+//			result = pm.createPhoto(".jpg", photo.getUploadedImage());
+		} catch (Exception e) {
+			
+		}
+	
+		return result;
+	}
+	
 	
 //	// add a new photo to the list
 //	@ApiMethod(name="photos.add", httpMethod="post")
@@ -75,6 +111,8 @@ public class PhotosEndpoint {
 		}
 		return result;
 	}
+	
+	
 	
 	// returns a photo's images, as defined defined in imageSizes
 //	@ApiMethod(name="images.sizes", httpMethod="get", path="photos/{photoId}/images/size")

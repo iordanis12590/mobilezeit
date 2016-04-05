@@ -21,6 +21,7 @@
 package org.wahlzeit.model;
 
 import com.google.api.client.util.ArrayMap;
+import com.google.api.client.util.Base64;
 import com.google.api.server.spi.config.AnnotationBoolean;
 import com.google.api.server.spi.config.ApiResourceProperty;
 import com.google.appengine.api.datastore.Key;
@@ -82,6 +83,26 @@ public class Photo extends DataObject {
 	 */
 	@Ignore
 	transient protected Map<PhotoSize, Image> images = new ArrayMap<PhotoSize, Image>();
+	
+	String blobImage;
+
+	public String getBlobImage() {
+        return this.blobImage;
+    }
+
+    public byte[] decodeBlobImage() {
+        return Base64.decodeBase64(this.blobImage);
+    }
+    
+    public Photo setBlobImage(String blobImage) {
+        this.blobImage = blobImage;
+        return this;
+    }
+
+    public Photo encodeBlobImage(byte[] blobImage) {
+        this.blobImage = Base64.encodeBase64URLSafeString(blobImage);
+        return this;
+    }
 	
 	/**
 	 *
