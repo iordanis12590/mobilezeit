@@ -83,26 +83,8 @@ public class Photo extends DataObject {
 	 */
 	@Ignore
 	transient protected Map<PhotoSize, Image> images = new ArrayMap<PhotoSize, Image>();
-	
+	@Ignore
 	String blobImage;
-
-	public String getBlobImage() {
-        return this.blobImage;
-    }
-
-    public byte[] decodeBlobImage() {
-        return Base64.decodeBase64(this.blobImage);
-    }
-    
-    public Photo setBlobImage(String blobImage) {
-        this.blobImage = blobImage;
-        return this;
-    }
-
-    public Photo encodeBlobImage(byte[] blobImage) {
-        this.blobImage = Base64.encodeBase64URLSafeString(blobImage);
-        return this;
-    }
 	
 	/**
 	 *
@@ -110,7 +92,9 @@ public class Photo extends DataObject {
 	protected boolean ownerNotifyAboutPraise = false;
 	protected EmailAddress ownerEmailAddress = EmailAddress.EMPTY;
 	protected Language ownerLanguage = Language.ENGLISH;
-	
+	@Ignore
+	protected String praisingClientId;
+
 	/**
 	 *
 	 */
@@ -135,7 +119,9 @@ public class Photo extends DataObject {
 	protected int praiseSum = 10;
 	protected int noVotes = 1;
 	protected int noVotesAtLastNotification = 1;
-	
+	@Ignore
+	protected int rating;
+
 	/**
 	 *
 	 */
@@ -441,5 +427,39 @@ public class Photo extends DataObject {
 	public void setNoNewPraise() {
 		noVotesAtLastNotification = noVotes;
 		incWriteCount();
+	}
+	
+	public int getRating() {
+		return rating;
+	}
+
+	public void setRating(int rating) {
+		this.rating = rating;
+	}
+	
+	public String getBlobImage() {
+        return this.blobImage;
+    }
+
+    public byte[] decodeBlobImage() {
+        return Base64.decodeBase64(this.blobImage);
+    }
+    
+    public Photo setBlobImage(String blobImage) {
+        this.blobImage = blobImage;
+        return this;
+    }
+
+    public Photo encodeBlobImage(byte[] blobImage) {
+        this.blobImage = Base64.encodeBase64URLSafeString(blobImage);
+        return this;
+    }
+    
+    public String getPraisingClientId() {
+		return praisingClientId;
+	}
+
+	public void setPraisingClientId(String praisingClientId) {
+		this.praisingClientId = praisingClientId;
 	}
 }

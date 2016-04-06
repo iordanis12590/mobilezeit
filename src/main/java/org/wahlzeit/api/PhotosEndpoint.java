@@ -62,23 +62,33 @@ public class PhotosEndpoint {
 			user.addPhoto(result);
 			result.setTags(photo.getTags());
 			pm.savePhoto(result);
-
-//			AsyncTaskExecutor.savePhotoAsync(photo.getId().asString());
-//			result = pm.createPhoto(".jpg", photo.getUploadedImage());
 		} catch (Exception e) {
 			
 		}
-	
+		return result;
+	}
+
+	@ApiMethod(name="photos.praise")
+	public Photo praisePhoto(Photo photo){
+		PhotoManager pm = PhotoManager.getInstance();
+		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
+		Photo result = pm.getPhotoFromId(photoId);
+		Client client = UserManager.getInstance().getClientById(photo.getPraisingClientId());
+		int rating = photo.getRating();
+		result.addToPraise(rating);
+		client.addPraisedPhotoId(result.getId());
+		pm.savePhoto(result);
 		return result;
 	}
 	
-	
-//	// add a new photo to the list
-//	@ApiMethod(name="photos.add", httpMethod="post")
-//	public Photo addPhoto(/*User user,*/ @Named("photo") Photo photo) {
-//		
-//		return null;
-//	}
+	@ApiMethod(name="photos.skip")
+	public Photo skipPhoto(Photo photo){
+		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
+		Photo result = PhotoManager.getInstance().getPhotoFromId(photoId);
+		Client client = UserManager.getInstance().getClientById(photo.getPraisingClientId());
+		client.addSkippedPhotoId(photoId);
+		return result;
+	}
 	
 	// delete photo
 	@ApiMethod(name = "photos.delete", httpMethod="delete", path="photos/{photoId}")
