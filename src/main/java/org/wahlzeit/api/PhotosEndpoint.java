@@ -15,6 +15,7 @@ import org.wahlzeit.model.Photo;
 import org.wahlzeit.model.PhotoId;
 import org.wahlzeit.model.PhotoManager;
 import org.wahlzeit.model.PhotoSize;
+import org.wahlzeit.model.PhotoStatus;
 import org.wahlzeit.model.UserManager;
 import org.wahlzeit.model.User;
 
@@ -47,23 +48,38 @@ public class PhotosEndpoint {
 	@ApiMethod(name="photos.upload", path="photos/")
 	public Photo createPhoto(Photo photo) {
 		Photo result = null;
-		
         byte[] decodedString = photo.decodeBlobImage();
         Image image = ImagesServiceFactory.makeImage(decodedString);
-		
-        
 		PhotoManager pm = PhotoManager.getInstance();
 		UserManager um = UserManager.getInstance();
 		User user = um.getUserById(photo.getOwnerId());
-				
 		try {
-			
 			result = pm.createPhoto(photo.getEnding(), image);
 			user.addPhoto(result);
 			result.setTags(photo.getTags());
 			pm.savePhoto(result);
 		} catch (Exception e) {
 			
+		}
+		return result;
+	}
+	
+	@ApiMethod(name="photos.update")
+	public Photo updatePhoto(Photo photo) {
+		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
+		Photo result = PhotoManager.getInstance().getPhotoFromId(photoId);
+		UserManager userManager = UserManager.getInstance();
+		User photoOwner = userManager.getUserById(photo.getOwnerId());
+		if(photo != null) {
+			PhotoStatus status = photo.getStatus();
+			boolean isVisible = status.isInvisible();
+			result.setStatus(photo.getStatus().asInvisible(isVisible));
+			result.setTags(photo.getTags());
+			PhotoManager.getInstance().savePhoto(result);
+			if (photoOwner.getUserPhoto() == photo) {
+				photoOwner.setUserPhoto(null);
+				userManager.saveClient(photoOwner);
+			}
 		}
 		return result;
 	}
