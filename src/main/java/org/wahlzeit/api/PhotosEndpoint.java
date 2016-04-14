@@ -106,23 +106,40 @@ public class PhotosEndpoint {
 		return result;
 	}
 	
-	// delete photo
-	@ApiMethod(name = "photos.delete", httpMethod="delete", path="photos/{photoId}")
-	public Photo delete(@Named("photoId") String photoIdAsString) {
-		PhotoId photoId = PhotoId.getIdFromString(photoIdAsString);
-		Photo photo = PhotoManager.getInstance().getPhotoFromId(photoId);
-		if(photo != null) {
+	@ApiMethod(name="photos.setStatusAsDeleted")
+	public Photo setStatusAsDeleted(Photo photo){
+		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
+		Photo result = PhotoManager.getInstance().getPhotoFromId(photoId);
+		if(result != null) {
 			UserManager userManager = UserManager.getInstance();
-			org.wahlzeit.model.User photoOwner = userManager.getUserById(photo.getOwnerId());
-			photo.setStatus(photo.getStatus().asDeleted(true));
-			PhotoManager.getInstance().savePhoto(photo);
-			if (photoOwner.getUserPhoto() == photo) {
+			org.wahlzeit.model.User photoOwner = userManager.getUserById(result.getOwnerId());
+			result.setStatus(result.getStatus().asDeleted(true));
+			PhotoManager.getInstance().savePhoto(result);
+			if (photoOwner.getUserPhoto() == result) {
 				photoOwner.setUserPhoto(null);
 				userManager.saveClient(photoOwner);
 			}
 		}
-		return photo;
+		return result;
 	}
+	
+	// delete photo
+//	@ApiMethod(name = "photos.delete", httpMethod="delete", path="photos/{photoId}")
+//	public Photo delete(@Named("photoId") String photoIdAsString) {
+//		PhotoId photoId = PhotoId.getIdFromString(photoIdAsString);
+//		Photo photo = PhotoManager.getInstance().getPhotoFromId(photoId);
+//		if(photo != null) {
+//			UserManager userManager = UserManager.getInstance();
+//			org.wahlzeit.model.User photoOwner = userManager.getUserById(photo.getOwnerId());
+//			photo.setStatus(photo.getStatus().asDeleted(true));
+//			PhotoManager.getInstance().savePhoto(photo);
+//			if (photoOwner.getUserPhoto() == photo) {
+//				photoOwner.setUserPhoto(null);
+//				userManager.saveClient(photoOwner);
+//			}
+//		}
+//		return photo;
+//	}
 	
 	
 	// returns all images (of different sizes) from a photo
