@@ -20,6 +20,8 @@
 
 package org.wahlzeit.model;
 
+import com.google.api.server.spi.config.AnnotationBoolean;
+import com.google.api.server.spi.config.ApiResourceProperty;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 
@@ -38,6 +40,7 @@ public class PhotoCase extends Case {
 	public static final String CREATED_ON = "createdOn";
 	public static final String WAS_DECIDED = "wasDecided";
 	public static final String DECIDED_ON = "decidedOn";
+	@ApiResourceProperty(ignored=AnnotationBoolean.TRUE)
 	protected CaseId id = CaseId.NULL_ID; // case id
 	protected int applicationId = 0; // application id (unused on Java level)
 	protected Photo photo = null; // photo id -> photo
@@ -53,6 +56,10 @@ public class PhotoCase extends Case {
 	@Id
 	Long longId;
 
+	public PhotoCase () {
+		// do nothing, required
+	}
+	
 	/**
 	 *
 	 */
@@ -63,6 +70,7 @@ public class PhotoCase extends Case {
 		incWriteCount();
 	}
 
+	
 	/**
 	 *
 	 */

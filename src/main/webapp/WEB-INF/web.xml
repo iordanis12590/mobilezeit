@@ -54,7 +54,7 @@
         <init-param>
             <param-name>services</param-name>
             <param-value>
-                org.wahlzeit.api.AboutEndpoint, org.wahlzeit.api.UserEndpoint, org.wahlzeit.api.PhotosEndpoint
+                org.wahlzeit.api.AboutEndpoint, org.wahlzeit.api.UserEndpoint, org.wahlzeit.api.PhotosEndpoint, org.wahlzeit.api.FlagsEndpoint,
             </param-value>
         </init-param>
     </servlet>
