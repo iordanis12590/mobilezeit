@@ -22,6 +22,9 @@ package org.wahlzeit.model;
 
 import java.io.Serializable;
 
+import com.google.api.server.spi.config.AnnotationBoolean;
+import com.google.api.server.spi.config.ApiResourceProperty;
+
 /**
  * Simple value object for case ids.
  */
@@ -35,8 +38,19 @@ public class CaseId implements Serializable {
 	/**
 	 *
 	 */
-	private final int id;
+	private int id;
+	
+	public CaseId() {
+		//do nothing
+	}
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 	/**
 	 *
 	 */
@@ -54,6 +68,7 @@ public class CaseId implements Serializable {
 	/**
 	 *
 	 */
+	@ApiResourceProperty(ignored=AnnotationBoolean.TRUE)
 	public CaseId getNextId() {
 		return new CaseId(id + 1);
 	}

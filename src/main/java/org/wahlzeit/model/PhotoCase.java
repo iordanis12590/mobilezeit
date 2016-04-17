@@ -40,7 +40,6 @@ public class PhotoCase extends Case {
 	public static final String CREATED_ON = "createdOn";
 	public static final String WAS_DECIDED = "wasDecided";
 	public static final String DECIDED_ON = "decidedOn";
-	@ApiResourceProperty(ignored=AnnotationBoolean.TRUE)
 	protected CaseId id = CaseId.NULL_ID; // case id
 	protected int applicationId = 0; // application id (unused on Java level)
 	protected Photo photo = null; // photo id -> photo
@@ -81,6 +80,7 @@ public class PhotoCase extends Case {
 	/**
 	 *
 	 */
+//	@ApiResourceProperty(ignored=AnnotationBoolean.TRUE)
 	public CaseId getId() {
 		return id;
 	}

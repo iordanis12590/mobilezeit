@@ -4,12 +4,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.wahlzeit.model.CaseId;
 import org.wahlzeit.model.FlagReason;
 import org.wahlzeit.model.Photo;
 import org.wahlzeit.model.PhotoCase;
 import org.wahlzeit.model.PhotoCaseManager;
 import org.wahlzeit.model.PhotoId;
 import org.wahlzeit.model.PhotoManager;
+import org.wahlzeit.model.PhotoStatus;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -45,6 +47,26 @@ public class FlagsEndpoint {
 		PhotoCaseManager pcm = PhotoCaseManager.getInstance();
 		PhotoCase[] flaggedCases = pcm.getOpenPhotoCasesByAscendingAge();
 		result = new HashSet<PhotoCase>(Arrays.asList(flaggedCases));
+		return result;
+	}
+	
+	@ApiMethod(name="flags.update")
+	public PhotoCase updatePhotoCase(PhotoCase photoCase) {
+		String id = photoCase.getIdAsString();
+		PhotoCaseManager pcm = PhotoCaseManager.getInstance();
+		CaseId caseId = new CaseId(Integer.parseInt(id));
+		
+		PhotoCase result = pcm.getPhotoCase(caseId);
+		Photo photo = result.getPhoto();
+		PhotoStatus status = photo.getStatus();
+		if (photoCase.getPhoto().getStatus().equals(PhotoStatus.MODERATED)) {
+			status = status.asModerated(true);
+		} else {
+			status = status.asFlagged(false);
+		}
+		photo.setStatus(status);
+		result.setDecided();
+		pcm.removePhotoCase(result);
 		return result;
 	}
 }
