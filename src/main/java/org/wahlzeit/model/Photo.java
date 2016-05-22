@@ -28,6 +28,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.images.Image;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Parent;
 import org.wahlzeit.services.DataObject;
@@ -41,6 +42,7 @@ import java.util.Map;
  * A photo represents a user-provided (uploaded) photo.
  */
 @Entity
+@Index
 public class Photo extends DataObject {
 
 	/**
@@ -75,6 +77,7 @@ public class Photo extends DataObject {
 	/**
 	 *
 	 */
+	@Index
 	protected String ownerId;
 	
 	/**
@@ -111,6 +114,7 @@ public class Photo extends DataObject {
 	/**
 	 *
 	 */
+	@Index
 	protected PhotoStatus status = PhotoStatus.VISIBLE;
 	
 	/**

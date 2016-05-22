@@ -1,12 +1,13 @@
 package org.wahlzeit.api;
 
-import java.awt.List;
+import java.util.List;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 
 import org.wahlzeit.agents.AsyncTaskExecutor;
@@ -17,13 +18,19 @@ import org.wahlzeit.model.PhotoManager;
 import org.wahlzeit.model.PhotoSize;
 import org.wahlzeit.model.PhotoStatus;
 import org.wahlzeit.model.UserManager;
+import org.wahlzeit.services.OfyService;
 import org.wahlzeit.model.User;
 
+import com.google.api.client.auth.oauth2.AuthorizationCodeFlow.Builder;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.response.CollectionResponse;
+import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.images.Image;
 import com.google.appengine.api.images.ImagesServiceFactory;
+import com.googlecode.objectify.cmd.Query;
 
 @Api(name="wahlzeitApi",
 version = "v1",
@@ -31,7 +38,38 @@ description = "A multiclient API for Whalzeit"
 )
 public class PhotosEndpoint {
 	
-	//TODO: add cursor and limit parameters to limit transmitted data
+	@ApiMethod(name="photos.pagination.list")
+	public CollectionResponse<Photo> listPhoto(
+			@Nullable @Named("cursor") String cursorString,
+			@Nullable @Named("limit") Integer limit,
+			@Nullable @Named("fromClient") String clientId) {
+		
+		Query<Photo> query = OfyService.ofy().load().type(Photo.class);
+		Cursor cursor = null;
+		List<Photo> photosList = new ArrayList<Photo>();	
+		if(clientId != null) {
+			query = query.filter("ownerId", clientId);
+		}
+		if(cursorString != null) {
+			cursor = Cursor.fromWebSafeString(cursorString);
+			query = query.startAt(cursor);
+		}
+		if(limit != null) {
+			query = query.limit(limit);
+		}
+		QueryResultIterator<Photo> iterator = query.iterator();
+		while(iterator.hasNext()) {
+			Photo photo = iterator.next();
+			photosList.add(photo);
+			cursor = iterator.getCursor();
+		}
+		CollectionResponse.Builder<Photo> result = CollectionResponse.<Photo>builder().setItems(photosList);
+		if (cursor != null) {
+			result.setNextPageToken(cursor.toWebSafeString());
+		}
+		return result.build();
+	}
+	
 	// list all photos
 	@ApiMethod(name="photos.list", httpMethod="get", path="photos/")
 	public Collection<Photo> listAllPhotos() {
