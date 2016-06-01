@@ -43,14 +43,6 @@ public class UserEndpoint {
         scopes = {
             "https://www.googleapis.com/auth/userinfo.email" })
 	public Client updateClient(com.google.appengine.api.users.User user, HttpServletRequest req, @Nullable User wahlzeitClient) {
-		// Downcast client to user or admin
-//		Client modifiedWahlzeitClient;
-//		if(wahlzeitClient.getAccessRights().toString().equals("ADMINISTRATOR")) {
-//			modifiedWahlzeitClient = (Administrator) wahlzeitClient;
-//		} else {
-//			modifiedWahlzeitClient = (User) wahlzeitClient;
-//		}
-		
 		UserManager userManager = UserManager.getInstance();
 		User actualWahlzeitClient = userManager.getUserById(wahlzeitClient.getId());
 		

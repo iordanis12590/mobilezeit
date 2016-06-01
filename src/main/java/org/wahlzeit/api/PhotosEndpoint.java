@@ -1,6 +1,7 @@
 package org.wahlzeit.api;
 
 import java.util.List;
+import java.util.Set;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,10 +14,12 @@ import javax.imageio.ImageIO;
 import org.wahlzeit.agents.AsyncTaskExecutor;
 import org.wahlzeit.model.Client;
 import org.wahlzeit.model.Photo;
+import org.wahlzeit.model.PhotoFilter;
 import org.wahlzeit.model.PhotoId;
 import org.wahlzeit.model.PhotoManager;
 import org.wahlzeit.model.PhotoSize;
 import org.wahlzeit.model.PhotoStatus;
+import org.wahlzeit.model.Tags;
 import org.wahlzeit.model.UserManager;
 import org.wahlzeit.services.OfyService;
 import org.wahlzeit.model.User;
@@ -37,16 +40,31 @@ version = "v1",
 description = "A multiclient API for Whalzeit"
 )
 public class PhotosEndpoint {
-	
+		
 	@ApiMethod(name="photos.pagination.list")
 	public CollectionResponse<Photo> listPhoto(
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit,
-			@Nullable @Named("fromClient") String clientId) {
+			@Nullable @Named("fromClient") String clientId,
+			@Nullable @Named("filter") String filter) {
 		
 		Query<Photo> query = OfyService.ofy().load().type(Photo.class);
 		Cursor cursor = null;
 		List<Photo> photosList = new ArrayList<Photo>();	
+		if(filter != null) {
+			Tags tags = new Tags(filter);
+			PhotoFilter photoFilter = new PhotoFilter();
+			photoFilter.setTags(tags);
+			photoFilter.generateDisplayablePhotoIds();
+			List<PhotoId> filteredPhotoIds = photoFilter.getDisplayablePhotoIds();
+			List<String> filteredPhotoIdsAsString = new ArrayList<String>();
+			for(PhotoId photoId: filteredPhotoIds) {
+				filteredPhotoIdsAsString.add(photoId.getStringValue());
+			}
+			if(!filteredPhotoIds.isEmpty()) {
+				query = query.filter("id.stringValue in", filteredPhotoIdsAsString);				
+			}
+		}
 		if(clientId != null) {
 			query = query.filter("ownerId", clientId);
 		}
@@ -70,17 +88,27 @@ public class PhotosEndpoint {
 		return result.build();
 	}
 	
-	// list all photos
-	@ApiMethod(name="photos.list", httpMethod="get", path="photos/")
-	public Collection<Photo> listAllPhotos() {
+	@ApiMethod(name="photos.filter.list")
+	public CollectionResponse<Photo> filterPhoto(@Nullable @Named("haha") String haha) {
+		Query<Photo> query = OfyService.ofy().load().type(Photo.class);
 		Collection<Photo> result;
-		PhotoManager photoManager = PhotoManager.getInstance();
-		result = photoManager.getPhotoCache().values();
-		
-		boolean b = result.isEmpty();
-		System.out.println(b);
-		
-		return result;
+		if(haha != null) {
+			Tags tags = new Tags(haha);
+			PhotoFilter photoFilter = new PhotoFilter();
+			photoFilter.setTags(tags);
+			photoFilter.generateDisplayablePhotoIds();
+			List<PhotoId> filteredPhotoIds = photoFilter.getDisplayablePhotoIds();
+			List<String> filteredPhotoIdsAsString = new ArrayList<String>();
+			for(PhotoId photoId: filteredPhotoIds) {
+				filteredPhotoIdsAsString.add(photoId.getStringValue());
+			}
+			if(!filteredPhotoIds.isEmpty()) {
+				query = query.filter("id.stringValue in", filteredPhotoIdsAsString);				
+			}
+		}
+		result = query.list();
+		CollectionResponse.Builder<Photo> collectionResponse = CollectionResponse.<Photo>builder().setItems(result);
+		return collectionResponse.build();
 	}
 	
 	@ApiMethod(name="photos.upload", path="photos/")
@@ -161,25 +189,6 @@ public class PhotosEndpoint {
 		return result;
 	}
 	
-	// delete photo
-//	@ApiMethod(name = "photos.delete", httpMethod="delete", path="photos/{photoId}")
-//	public Photo delete(@Named("photoId") String photoIdAsString) {
-//		PhotoId photoId = PhotoId.getIdFromString(photoIdAsString);
-//		Photo photo = PhotoManager.getInstance().getPhotoFromId(photoId);
-//		if(photo != null) {
-//			UserManager userManager = UserManager.getInstance();
-//			org.wahlzeit.model.User photoOwner = userManager.getUserById(photo.getOwnerId());
-//			photo.setStatus(photo.getStatus().asDeleted(true));
-//			PhotoManager.getInstance().savePhoto(photo);
-//			if (photoOwner.getUserPhoto() == photo) {
-//				photoOwner.setUserPhoto(null);
-//				userManager.saveClient(photoOwner);
-//			}
-//		}
-//		return photo;
-//	}
-	
-	
 	// returns all images (of different sizes) from a photo
 	@ApiMethod(name="images", httpMethod="get", path="photos/{photoId}/images")
 	public Collection<Image> listAllImages(@Named("photoId")String photoIdAsString) {
@@ -192,23 +201,6 @@ public class PhotosEndpoint {
 		}
 		return result;
 	}
-	
-	
-	
-	// returns a photo's images, as defined defined in imageSizes
-//	@ApiMethod(name="images.sizes", httpMethod="get", path="photos/{photoId}/images/size")
-//	public Collection<Image> listAllImagesOfSize(@Named("photoId")String photoIdAsString, ImageSizes imageSizes) {
-//		PhotoManager photoManager = PhotoManager.getInstance();
-//		PhotoId photoId = PhotoId.getIdFromString(photoIdAsString);
-//		Photo photo = photoManager.getPhotoFromId(photoId);			
-//		Collection<Image> result = new ArrayList<Image>();
-//		if(imageSizes.getSizes().length != 0) {
-//			for(String mySize: imageSizes.getSizes()) {
-//				result.add(photo.getImage(PhotoSize.getFromString(mySize)));
-//			}
-//		}
-//			
-//		return null;
-//	}
+
 }
 
