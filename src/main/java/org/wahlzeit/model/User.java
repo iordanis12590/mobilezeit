@@ -66,8 +66,7 @@ public class User extends Client {
 	/**
 	 *
 	 */
-	protected boolean notifyAboutPraise = true;
-	protected Gender gender = Gender.UNDEFINED;
+	
 	protected UserStatus status = UserStatus.CREATED;
 
 	/**
@@ -155,21 +154,6 @@ public class User extends Client {
 			photo.setOwnerNotifyAboutPraise(notifyAboutPraise);
 		}
 
-		incWriteCount();
-	}
-
-	/**
-	 * @methodtype get
-	 */
-	public Gender getGender() {
-		return gender;
-	}
-
-	/**
-	 * @methodtype set
-	 */
-	public void setGender(Gender newGender) {
-		gender = newGender;
 		incWriteCount();
 	}
 

@@ -42,7 +42,7 @@ public class UserEndpoint {
         audiences = { Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID },
         scopes = {
             "https://www.googleapis.com/auth/userinfo.email" })
-	public Client updateClient(com.google.appengine.api.users.User user, HttpServletRequest req, @Nullable User wahlzeitClient) {
+	public Client updateClient(com.google.appengine.api.users.User user, HttpServletRequest req, @Nullable Client wahlzeitClient) {
 		UserManager userManager = UserManager.getInstance();
 		User actualWahlzeitClient = userManager.getUserById(wahlzeitClient.getId());
 		
@@ -51,7 +51,7 @@ public class UserEndpoint {
 		String language = wahlzeitClient.getLanguage().asString();
 		boolean notify =  wahlzeitClient.getNotifyAboutPraise();
 		
-		wahlzeitClient.setNotifyAboutPraise(notify);
+		actualWahlzeitClient.setNotifyAboutPraise(notify);
 		
 		try {
 			if (!nickName.equals(actualWahlzeitClient.getNickName())) {

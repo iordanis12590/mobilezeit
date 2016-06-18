@@ -83,7 +83,10 @@ public class Client implements Serializable, Persistent {
 
 	protected List<PhotoId> skippedPhotoIds = new ArrayList<PhotoId>();
 
-
+	protected Gender gender = Gender.UNDEFINED;
+	
+	protected boolean notifyAboutPraise = true;
+	
 	/**
 	 *
 	 */
@@ -357,4 +360,28 @@ public class Client implements Serializable, Persistent {
 	public void setResourceId(String siteUrl) {
 		this.resourceId = siteUrl  + "_ah/spi/" + "clients/" + this.id;
 	}
+	
+	/**
+	 * @methodtype get
+	 */
+	public Gender getGender() {
+		return gender;
+	}
+
+	/**
+	 * @methodtype set
+	 */
+	public void setGender(Gender newGender) {
+		gender = newGender;
+		incWriteCount();
+	}
+	
+	public boolean getNotifyAboutPraise() {
+		return notifyAboutPraise;
+	}
+
+	public void setNotifyAboutPraise(boolean notifyAboutPraise) {
+		this.notifyAboutPraise = notifyAboutPraise;
+	}
+
 }
