@@ -1,5 +1,7 @@
 package org.wahlzeit.api;
 
+import static com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,11 +20,23 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 
 @Api(name="wahlzeitApi",
-version = "v1",
-description = "A multiclient API for Whalzeit"
+	version = "v1",
+	description = "A multiclient API for Whalzeit",
+	clientIds = {
+	        Constants.WEB_CLIENT_ID,
+	        Constants.ANDROID_CLIENT_ID,
+	        API_EXPLORER_CLIENT_ID },
+	    audiences = { Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID },
+	    scopes = {
+	        "https://www.googleapis.com/auth/userinfo.email" }
 )
 public class FlagsEndpoint {
 
+	/**
+	 * Creates and saves a new photo case
+	 * @param photoCase: The photo case to be created
+	 * @return
+	 */
 	@ApiMethod(name="flags.create")
 	public PhotoCase createPhotoCase(PhotoCase photoCase) {
 		PhotoCaseManager pmc = PhotoCaseManager.getInstance();
@@ -41,6 +55,10 @@ public class FlagsEndpoint {
 		return result;
 	}
 	
+	/**
+	 * Returns a list of all photo cases
+	 * @return
+	 */
 	@ApiMethod(name="flags.list")
 	public Collection<PhotoCase> listAllPhotoCases() {
 		Collection<PhotoCase> result;
@@ -50,6 +68,11 @@ public class FlagsEndpoint {
 		return result;
 	}
 	
+	/**
+	 * Updates a the photo case by changing its status accordingly
+	 * @param photoCase
+	 * @return
+	 */
 	@ApiMethod(name="flags.update")
 	public PhotoCase updatePhotoCase(PhotoCase photoCase) {
 		String id = photoCase.getIdAsString();

@@ -1,17 +1,14 @@
 package org.wahlzeit.api;
 
 import java.util.List;
-import java.util.Set;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+
+import static com.google.api.server.spi.Constant.API_EXPLORER_CLIENT_ID;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 
-import org.wahlzeit.agents.AsyncTaskExecutor;
 import org.wahlzeit.model.Client;
 import org.wahlzeit.model.Photo;
 import org.wahlzeit.model.PhotoFilter;
@@ -20,15 +17,16 @@ import org.wahlzeit.model.PhotoManager;
 import org.wahlzeit.model.PhotoSize;
 import org.wahlzeit.model.PhotoStatus;
 import org.wahlzeit.model.Tags;
+import org.wahlzeit.model.User;
 import org.wahlzeit.model.UserManager;
 import org.wahlzeit.services.OfyService;
-import org.wahlzeit.model.User;
 
-import com.google.api.client.auth.oauth2.AuthorizationCodeFlow.Builder;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.CollectionResponse;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.images.Image;
@@ -36,18 +34,39 @@ import com.google.appengine.api.images.ImagesServiceFactory;
 import com.googlecode.objectify.cmd.Query;
 
 @Api(name="wahlzeitApi",
-version = "v1",
-description = "A multiclient API for Whalzeit"
+	version = "v1",
+	description = "A multiclient API for Whalzeit",
+	clientIds = {
+        Constants.WEB_CLIENT_ID,
+        Constants.ANDROID_CLIENT_ID,
+        API_EXPLORER_CLIENT_ID },
+    audiences = { Constants.WEB_CLIENT_ID, Constants.ANDROID_CLIENT_ID },
+    scopes = {
+        "https://www.googleapis.com/auth/userinfo.email" }
 )
 public class PhotosEndpoint {
 		
-	@ApiMethod(name="photos.pagination.list")
+	/**
+	 * Retrieves photos.
+	 * Photos can be either filtered by tag (filter), or by the user they belong to (fromClient). 
+	 * 
+	 * In addition a paging mechanism allows retrieving only a limited amount of photos, in each request. 
+	 * 
+	 * @param cursorString	The next page indicator token, used when paging photos
+	 * @param limit			The maximum amount of photos to retrieve
+	 * @param fromClient	The owner which photos' should be retrieved		
+	 * @param filter		The tags 
+	 * @return
+	 */
+	@ApiMethod(name="photos.list",
+			path="photos/")
 	public CollectionResponse<Photo> listPhoto(
+			com.google.appengine.api.users.User user,
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit,
 			@Nullable @Named("fromClient") String clientId,
-			@Nullable @Named("filter") String filter) {
-		
+			@Nullable @Named("filter") String filter) throws UnauthorizedException {
+		if (user == null) throw new UnauthorizedException("Client application is not authorized");
 		Query<Photo> query = OfyService.ofy().load().type(Photo.class);
 		Cursor cursor = null;
 		List<Photo> photosList = new ArrayList<Photo>();	
@@ -88,31 +107,16 @@ public class PhotosEndpoint {
 		return result.build();
 	}
 	
-	@ApiMethod(name="photos.filter.list")
-	public CollectionResponse<Photo> filterPhoto(@Nullable @Named("haha") String haha) {
-		Query<Photo> query = OfyService.ofy().load().type(Photo.class);
-		Collection<Photo> result;
-		if(haha != null) {
-			Tags tags = new Tags(haha);
-			PhotoFilter photoFilter = new PhotoFilter();
-			photoFilter.setTags(tags);
-			photoFilter.generateDisplayablePhotoIds();
-			List<PhotoId> filteredPhotoIds = photoFilter.getDisplayablePhotoIds();
-			List<String> filteredPhotoIdsAsString = new ArrayList<String>();
-			for(PhotoId photoId: filteredPhotoIds) {
-				filteredPhotoIdsAsString.add(photoId.getStringValue());
-			}
-			if(!filteredPhotoIds.isEmpty()) {
-				query = query.filter("id.stringValue in", filteredPhotoIdsAsString);				
-			}
-		}
-		result = query.list();
-		CollectionResponse.Builder<Photo> collectionResponse = CollectionResponse.<Photo>builder().setItems(result);
-		return collectionResponse.build();
-	}
-	
-	@ApiMethod(name="photos.upload", path="photos/")
-	public Photo createPhoto(Photo photo) {
+
+	/**
+	 * Creates and saves a new photo
+	 * @param photo	Photo to be uploaded
+	 * @return
+	 */
+	@ApiMethod(name="photos.upload", 
+			path="photos/")
+	public Photo createPhoto(com.google.appengine.api.users.User authenticatedUser, Photo photo) throws UnauthorizedException {
+		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
 		Photo result = null;
         byte[] decodedString = photo.decodeBlobImage();
         Image image = ImagesServiceFactory.makeImage(decodedString);
@@ -130,8 +134,14 @@ public class PhotosEndpoint {
 		return result;
 	}
 	
+	/**
+	 * Updates photos tags and visibility settings
+	 * @param photo:	Photo to update
+	 * @return: The updates photo
+	 */
 	@ApiMethod(name="photos.update")
-	public Photo updatePhoto(Photo photo) {
+	public Photo updatePhoto(com.google.appengine.api.users.User authenticatedUser, Photo photo) throws UnauthorizedException {
+		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
 		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
 		Photo result = PhotoManager.getInstance().getPhotoFromId(photoId);
 		UserManager userManager = UserManager.getInstance();
@@ -149,9 +159,17 @@ public class PhotosEndpoint {
 		}
 		return result;
 	}
-
+	
+	/**
+	 * Praises a single photo
+	 * @param authenticatedUser
+	 * @param photo:	Photo to be praised
+	 * @return Return the photo after calculating the new rating average
+	 * @throws UnauthorizedException
+	 */
 	@ApiMethod(name="photos.praise")
-	public Photo praisePhoto(Photo photo){
+	public Photo praisePhoto(com.google.appengine.api.users.User authenticatedUser, Photo photo) throws UnauthorizedException {
+		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
 		PhotoManager pm = PhotoManager.getInstance();
 		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
 		Photo result = pm.getPhotoFromId(photoId);
@@ -163,8 +181,16 @@ public class PhotosEndpoint {
 		return result;
 	}
 	
+	/**
+	 * Adds a photo to the client's skipped photos
+	 * @param authenticatedUser
+	 * @param photo: Photo to skip
+	 * @return
+	 * @throws UnauthorizedException
+	 */
 	@ApiMethod(name="photos.skip")
-	public Photo skipPhoto(Photo photo){
+	public Photo skipPhoto(com.google.appengine.api.users.User authenticatedUser, Photo photo) throws UnauthorizedException{
+		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
 		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
 		Photo result = PhotoManager.getInstance().getPhotoFromId(photoId);
 		Client client = UserManager.getInstance().getClientById(photo.getPraisingClientId());
@@ -172,8 +198,20 @@ public class PhotosEndpoint {
 		return result;
 	}
 	
-	@ApiMethod(name="photos.setStatusAsDeleted")
-	public Photo setStatusAsDeleted(Photo photo){
+	/**
+	 * Deletes a photo
+	 * @param authenticatedUser
+	 * @param photo: The photo to be deleted
+	 * @return
+	 * @throws UnauthorizedException
+	 * 
+	 * @BUG: If the HttpMethod is specified (DELETE), or the method is renamed to delete, remove etc, The method won't work 
+	 * as there will be some bug in the generated client stubs causing an exception:
+	 * IllegalArgumentException: DELETE with non-zero content length is not supported
+	 */
+	@ApiMethod(name="photos.erase")
+	public Photo erasePhoto(com.google.appengine.api.users.User authenticatedUser, Photo photo) throws UnauthorizedException {
+		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
 		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
 		Photo result = PhotoManager.getInstance().getPhotoFromId(photoId);
 		if(result != null) {
