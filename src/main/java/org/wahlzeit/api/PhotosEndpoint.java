@@ -226,19 +226,6 @@ public class PhotosEndpoint {
 		}
 		return result;
 	}
-	
-	// returns all images (of different sizes) from a photo
-	@ApiMethod(name="images", httpMethod="get", path="photos/{photoId}/images")
-	public Collection<Image> listAllImages(@Named("photoId")String photoIdAsString) {
-		PhotoManager photoManager = PhotoManager.getInstance();
-		PhotoId photoId = PhotoId.getIdFromString(photoIdAsString);
-		Photo photo = photoManager.getPhotoFromId(photoId);
-		Collection<Image> result = new ArrayList<Image>();
-		for(PhotoSize photoSize: PhotoSize.values()) {
-			result.add(photo.getImage(photoSize));
-		}
-		return result;
-	}
 
 }
 
