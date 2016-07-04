@@ -19,6 +19,7 @@ import org.wahlzeit.utils.StringUtil;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
 
 
@@ -44,8 +45,9 @@ public class UserEndpoint {
 	 * @param wahlzeitClient The client to be updated
 	 * @return
 	 */
-	@ApiMethod(name="clients.update")
-	public Client updateClient(com.google.appengine.api.users.User user, HttpServletRequest req, @Nullable Client wahlzeitClient) {
+	@ApiMethod(name="clients.update",
+			path="clients/{clientId}")
+	public Client updateClient(com.google.appengine.api.users.User user, HttpServletRequest req, @Named("clientId") String clientIdAsString, @Nullable Client wahlzeitClient) {
 		UserManager userManager = UserManager.getInstance();
 		User actualWahlzeitClient = userManager.getUserById(wahlzeitClient.getId());
 		
@@ -88,7 +90,7 @@ public class UserEndpoint {
 	 * @param wahlzeitClient
 	 * @return
 	 */
-	@ApiMethod(name="clients.create")
+	@ApiMethod(name="clients.create", path="clients/")
 	public Client createClient(com.google.appengine.api.users.User user, HttpServletRequest req, @Nullable Client wahlzeitClient) {
 		Client result = null;
 		String uriPrefix = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + "/";

@@ -109,7 +109,7 @@ public class PhotosEndpoint {
 	
 
 	/**
-	 * Creates and saves a new photo
+	 * Creates and adds a new photo to the collection
 	 * @param photo	Photo to be uploaded
 	 * @return
 	 */
@@ -134,13 +134,23 @@ public class PhotosEndpoint {
 		return result;
 	}
 	
+	@ApiMethod(name="photos.get",
+			path="photos/{photoId}")
+	public Photo getIndividualPhoto(com.google.appengine.api.users.User authenticatedUser, @Named("photoId") String photoIdAsString) throws UnauthorizedException {
+		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
+		PhotoId photoId = PhotoId.getIdFromString(photoIdAsString);
+		Photo result = PhotoManager.getInstance().getPhotoFromId(photoId);
+		return result;
+	}
+	
 	/**
 	 * Updates photos tags and visibility settings
 	 * @param photo:	Photo to update
 	 * @return: The updates photo
 	 */
-	@ApiMethod(name="photos.update")
-	public Photo updatePhoto(com.google.appengine.api.users.User authenticatedUser, Photo photo) throws UnauthorizedException {
+	@ApiMethod(name="photos.update",
+			path="photos/{photoId}")
+	public Photo updatePhoto(com.google.appengine.api.users.User authenticatedUser, @Named("photoId") String photoIdAsString, Photo photo) throws UnauthorizedException {
 		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
 		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
 		Photo result = PhotoManager.getInstance().getPhotoFromId(photoId);
@@ -157,44 +167,6 @@ public class PhotosEndpoint {
 				userManager.saveClient(photoOwner);
 			}
 		}
-		return result;
-	}
-	
-	/**
-	 * Praises a single photo
-	 * @param authenticatedUser
-	 * @param photo:	Photo to be praised
-	 * @return Return the photo after calculating the new rating average
-	 * @throws UnauthorizedException
-	 */
-	@ApiMethod(name="photos.praise")
-	public Photo praisePhoto(com.google.appengine.api.users.User authenticatedUser, Photo photo) throws UnauthorizedException {
-		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
-		PhotoManager pm = PhotoManager.getInstance();
-		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
-		Photo result = pm.getPhotoFromId(photoId);
-		Client client = UserManager.getInstance().getClientById(photo.getPraisingClientId());
-		int rating = photo.getRating();
-		result.addToPraise(rating);
-		client.addPraisedPhotoId(result.getId());
-		pm.savePhoto(result);
-		return result;
-	}
-	
-	/**
-	 * Adds a photo to the client's skipped photos
-	 * @param authenticatedUser
-	 * @param photo: Photo to skip
-	 * @return
-	 * @throws UnauthorizedException
-	 */
-	@ApiMethod(name="photos.skip")
-	public Photo skipPhoto(com.google.appengine.api.users.User authenticatedUser, Photo photo) throws UnauthorizedException{
-		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
-		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
-		Photo result = PhotoManager.getInstance().getPhotoFromId(photoId);
-		Client client = UserManager.getInstance().getClientById(photo.getPraisingClientId());
-		client.addSkippedPhotoId(photoId);
 		return result;
 	}
 	
@@ -224,6 +196,46 @@ public class PhotosEndpoint {
 				userManager.saveClient(photoOwner);
 			}
 		}
+		return result;
+	}
+	
+	/**
+	 * Praises a single photo
+	 * @param authenticatedUser
+	 * @param photo:	Photo to be praised
+	 * @return Return the photo after calculating the new rating average
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name="photos.praise",
+			path="photos/{photoId}/praising")
+	public Photo praisePhoto(com.google.appengine.api.users.User authenticatedUser, @Named("photoId") String photoIdAsString, Photo photo) throws UnauthorizedException {
+		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
+		PhotoManager pm = PhotoManager.getInstance();
+		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
+		Photo result = pm.getPhotoFromId(photoId);
+		Client client = UserManager.getInstance().getClientById(photo.getPraisingClientId());
+		int rating = photo.getRating();
+		result.addToPraise(rating);
+		client.addPraisedPhotoId(result.getId());
+		pm.savePhoto(result);
+		return result;
+	}
+	
+	/**
+	 * Adds a photo to the client's skipped photos
+	 * @param authenticatedUser
+	 * @param photo: Photo to skip
+	 * @return
+	 * @throws UnauthorizedException
+	 */
+	@ApiMethod(name="photos.skip",
+			path="photos/{photoId}/skipping")
+	public Photo skipPhoto(com.google.appengine.api.users.User authenticatedUser, @Named("photoId") String id, Photo photo) throws UnauthorizedException{
+		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
+		PhotoId photoId = PhotoId.getIdFromString(photo.getIdAsString());
+		Photo result = PhotoManager.getInstance().getPhotoFromId(photoId);
+		Client client = UserManager.getInstance().getClientById(photo.getPraisingClientId());
+		client.addSkippedPhotoId(photoId);
 		return result;
 	}
 

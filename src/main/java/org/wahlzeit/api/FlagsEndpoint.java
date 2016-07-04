@@ -37,7 +37,8 @@ public class FlagsEndpoint {
 	 * @param photoCase: The photo case to be created
 	 * @return
 	 */
-	@ApiMethod(name="flags.create")
+	@ApiMethod(name="flags.create",
+			path="photocases/")
 	public PhotoCase createPhotoCase(PhotoCase photoCase) {
 		PhotoCaseManager pmc = PhotoCaseManager.getInstance();
 		PhotoManager pm = PhotoManager.getInstance();
@@ -59,7 +60,8 @@ public class FlagsEndpoint {
 	 * Returns a list of all photo cases
 	 * @return
 	 */
-	@ApiMethod(name="flags.list")
+	@ApiMethod(name="flags.list",
+			path="photocases/")
 	public Collection<PhotoCase> listAllPhotoCases() {
 		Collection<PhotoCase> result;
 		PhotoCaseManager pcm = PhotoCaseManager.getInstance();
@@ -73,8 +75,9 @@ public class FlagsEndpoint {
 	 * @param photoCase
 	 * @return
 	 */
-	@ApiMethod(name="flags.update")
-	public PhotoCase updatePhotoCase(PhotoCase photoCase) {
+	@ApiMethod(name="flags.update",
+			path="photocases/{photoCaseId}")
+	public PhotoCase updatePhotoCase(@Named("photoCaseId") String photoCaseIdAsString, PhotoCase photoCase) {
 		String id = photoCase.getIdAsString();
 		PhotoCaseManager pcm = PhotoCaseManager.getInstance();
 		CaseId caseId = new CaseId(Integer.parseInt(id));
