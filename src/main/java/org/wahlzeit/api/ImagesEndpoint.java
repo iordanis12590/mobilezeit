@@ -15,6 +15,7 @@ import org.wahlzeit.model.PhotoSize;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.images.Image;
 
 @Api(name="wahlzeitApi",
@@ -36,7 +37,8 @@ public class ImagesEndpoint {
 	 * @return
 	 */
 	@ApiMethod(name="images", httpMethod="get", path="photos/{photoId}/images")
-	public Collection<Image> listAllImages(@Named("photoId")String photoIdAsString, @Named("imageSizes") @Nullable PhotoSize[] sizes) {
+	public Collection<Image> listAllImages(com.google.appengine.api.users.User user, @Named("photoId")String photoIdAsString, @Named("imageSizes") @Nullable PhotoSize[] sizes) throws UnauthorizedException{
+		if (user == null) throw new UnauthorizedException("Client application is not authorized");
 		PhotoManager photoManager = PhotoManager.getInstance();
 		PhotoId photoId = PhotoId.getIdFromString(photoIdAsString);
 		Photo photo = photoManager.getPhotoFromId(photoId);

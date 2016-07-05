@@ -358,7 +358,7 @@ public class Client implements Serializable, Persistent {
 	
 
 	public void setResourceId(String siteUrl) {
-		this.resourceId = siteUrl  + "_ah/spi/" + "clients/" + this.id;
+		this.resourceId = siteUrl  + "_ah/spi/wahlzeitApi/v1/" + "clients/" + this.id;
 	}
 	
 	/**

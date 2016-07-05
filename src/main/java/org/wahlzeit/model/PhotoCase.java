@@ -24,6 +24,7 @@ import com.google.api.server.spi.config.AnnotationBoolean;
 import com.google.api.server.spi.config.ApiResourceProperty;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Ignore;
 
 /**
  * A photo case is a case where someone flagged a photo as inappropriate.
@@ -55,6 +56,9 @@ public class PhotoCase extends Case {
 	@Id
 	Long longId;
 
+	@Ignore
+	String resourceId;
+	
 	public PhotoCase () {
 		// do nothing, required
 	}
@@ -180,5 +184,12 @@ public class PhotoCase extends Case {
 	public PhotoStatus getPhotoStatus() {
 		return photo.getStatus();
 	}
+	
+	public String getResourceId() {
+		return this.resourceId;
+	}
 
+	public void setResourceId(String websiteUrl) {
+		resourceId = websiteUrl + "_ah/spi/wahlzeitApi/v1/" + "photocases/" + this.getIdAsString();
+	}
 }

@@ -89,7 +89,13 @@ public class Photo extends DataObject {
 	transient protected Map<PhotoSize, Image> images = new ArrayMap<PhotoSize, Image>();
 	@Ignore
 	String blobImage;
-	
+	@Ignore
+	String resourceId;
+	@Ignore
+	String imagesURI;
+	@Ignore
+	String ratingURI;
+
 	/**
 	 *
 	 */
@@ -102,7 +108,9 @@ public class Photo extends DataObject {
 	/**
 	 *
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	protected int width;
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	protected int height;
 	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	protected PhotoSize maxPhotoSize = PhotoSize.MEDIUM; // derived
@@ -135,6 +143,7 @@ public class Photo extends DataObject {
 	/**
 	 * The default type is jpg
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	protected String ending = "jpg";
 	
 	/**
@@ -290,6 +299,7 @@ public class Photo extends DataObject {
 	/**
 	 * @methodtype get
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	public int getThumbWidth() {
 		return isWiderThanHigher() ? MAX_THUMB_PHOTO_WIDTH : (width * MAX_THUMB_PHOTO_HEIGHT / height);
 	}
@@ -297,6 +307,7 @@ public class Photo extends DataObject {
 	/**
 	 * @methodtype boolean-query
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	public boolean isWiderThanHigher() {
 		return (height * MAX_PHOTO_WIDTH) < (width * MAX_PHOTO_HEIGHT);
 	}
@@ -304,6 +315,7 @@ public class Photo extends DataObject {
 	/**
 	 * @methodtype get
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	public int getThumbHeight() {
 		return isWiderThanHigher() ? (height * MAX_THUMB_PHOTO_WIDTH / width) : MAX_THUMB_PHOTO_HEIGHT;
 	}
@@ -332,6 +344,7 @@ public class Photo extends DataObject {
 	/**
 	 * @methodtype get
 	 */
+	@ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
 	public PhotoSize getMaxPhotoSize() {
 		return maxPhotoSize;
 	}
@@ -466,5 +479,23 @@ public class Photo extends DataObject {
 
 	public void setPraisingClientId(String praisingClientId) {
 		this.praisingClientId = praisingClientId;
+	}
+	
+	public String getResourceId() {
+		return resourceId;
+	}
+
+	public String getImagesURI() {
+		return imagesURI;
+	}
+	
+	public String getRatingURI() {
+		return ratingURI;
+	}
+	
+	public void setupNavigationUris(String siteUrl) {
+		this.resourceId = siteUrl + "_ah/spi/wahlzeitApi/v1/" + "photos/" + this.getIdAsString();
+		this.imagesURI = siteUrl + "_ah/spi/wahlzeitApi/v1/" + "photos/" + this.getIdAsString() + "/" + "images";
+		this.ratingURI = siteUrl + "_ah/spi/wahlzeitApi/v1/" + "photos/" + this.getIdAsString() + "/" + "praising";
 	}
 }

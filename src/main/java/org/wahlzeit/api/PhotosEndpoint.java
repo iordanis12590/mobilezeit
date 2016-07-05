@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
 
 import org.wahlzeit.model.Client;
 import org.wahlzeit.model.Photo;
@@ -62,6 +63,7 @@ public class PhotosEndpoint {
 			path="photos/")
 	public CollectionResponse<Photo> listPhoto(
 			com.google.appengine.api.users.User user,
+			HttpServletRequest req,
 			@Nullable @Named("cursor") String cursorString,
 			@Nullable @Named("limit") Integer limit,
 			@Nullable @Named("fromClient") String clientId,
@@ -69,7 +71,8 @@ public class PhotosEndpoint {
 		if (user == null) throw new UnauthorizedException("Client application is not authorized");
 		Query<Photo> query = OfyService.ofy().load().type(Photo.class);
 		Cursor cursor = null;
-		List<Photo> photosList = new ArrayList<Photo>();	
+		List<Photo> photosList = new ArrayList<Photo>();
+		String websitePath = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + "/";
 		if(filter != null) {
 			Tags tags = new Tags(filter);
 			PhotoFilter photoFilter = new PhotoFilter();
@@ -97,6 +100,7 @@ public class PhotosEndpoint {
 		QueryResultIterator<Photo> iterator = query.iterator();
 		while(iterator.hasNext()) {
 			Photo photo = iterator.next();
+			photo.setupNavigationUris(websitePath);
 			photosList.add(photo);
 			cursor = iterator.getCursor();
 		}
@@ -115,9 +119,10 @@ public class PhotosEndpoint {
 	 */
 	@ApiMethod(name="photos.upload", 
 			path="photos/")
-	public Photo createPhoto(com.google.appengine.api.users.User authenticatedUser, Photo photo) throws UnauthorizedException {
+	public Photo createPhoto(com.google.appengine.api.users.User authenticatedUser, HttpServletRequest req, Photo photo) throws UnauthorizedException {
 		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
 		Photo result = null;
+		String websitePath = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + "/";
         byte[] decodedString = photo.decodeBlobImage();
         Image image = ImagesServiceFactory.makeImage(decodedString);
 		PhotoManager pm = PhotoManager.getInstance();
@@ -125,6 +130,7 @@ public class PhotosEndpoint {
 		User user = um.getUserById(photo.getOwnerId());
 		try {
 			result = pm.createPhoto(photo.getEnding(), image);
+			result.setupNavigationUris(websitePath);
 			user.addPhoto(result);
 			result.setTags(photo.getTags());
 			pm.savePhoto(result);
@@ -136,10 +142,12 @@ public class PhotosEndpoint {
 	
 	@ApiMethod(name="photos.get",
 			path="photos/{photoId}")
-	public Photo getIndividualPhoto(com.google.appengine.api.users.User authenticatedUser, @Named("photoId") String photoIdAsString) throws UnauthorizedException {
+	public Photo getIndividualPhoto(com.google.appengine.api.users.User authenticatedUser, HttpServletRequest req, @Named("photoId") String photoIdAsString) throws UnauthorizedException {
 		if (authenticatedUser == null) throw new UnauthorizedException("Client application is not authorized");
+		String websitePath = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + "/";
 		PhotoId photoId = PhotoId.getIdFromString(photoIdAsString);
 		Photo result = PhotoManager.getInstance().getPhotoFromId(photoId);
+		result.setupNavigationUris(websitePath);
 		return result;
 	}
 	

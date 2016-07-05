@@ -50,7 +50,7 @@ public class UserEndpoint {
 	public Client updateClient(com.google.appengine.api.users.User user, HttpServletRequest req, @Named("clientId") String clientIdAsString, @Nullable Client wahlzeitClient) {
 		UserManager userManager = UserManager.getInstance();
 		User actualWahlzeitClient = userManager.getUserById(wahlzeitClient.getId());
-		
+		String websitePath = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + "/";
 		String nickName = wahlzeitClient.getNickName();
 		String gender = wahlzeitClient.getGender().toString();
 		String language = wahlzeitClient.getLanguage().asString();
@@ -78,7 +78,7 @@ public class UserEndpoint {
 			log.info(LogBuilder.createUserMessage().
 					addParameter("Gender", gender).toString());
 		}
-		
+		actualWahlzeitClient.setResourceId(websitePath);
 		userManager.saveClient(actualWahlzeitClient);
 		return actualWahlzeitClient;
 	}
@@ -93,7 +93,7 @@ public class UserEndpoint {
 	@ApiMethod(name="clients.create", path="clients/")
 	public Client createClient(com.google.appengine.api.users.User user, HttpServletRequest req, @Nullable Client wahlzeitClient) {
 		Client result = null;
-		String uriPrefix = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + "/";
+		String websitePath = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + "/";
 		if(user != null) {
 			if (wahlzeitClient.getAccessRights().toString().equals("ADMINISTRATOR")) {
 				result = createAuthorizedClient(true, wahlzeitClient.getId(), wahlzeitClient.getNickName(), user.getEmail());
@@ -103,7 +103,7 @@ public class UserEndpoint {
 		} else {
 			result = new Guest();
 		}
-		result.setResourceId(uriPrefix);
+		result.setResourceId(websitePath);
 		return result;
 	}
 	
