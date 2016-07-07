@@ -34,9 +34,9 @@ import com.google.api.server.spi.config.Nullable;
 	    scopes = {
         "https://www.googleapis.com/auth/userinfo.email" }
 )
-public class UserEndpoint {
+public class ClientsEndpoint {
 		
-	private static final Logger log = Logger.getLogger(UserEndpoint.class.getName());
+	private static final Logger log = Logger.getLogger(ClientsEndpoint.class.getName());
 	
 	/**
 	 * Endpoint method that updates a client

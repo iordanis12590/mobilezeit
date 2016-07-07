@@ -33,14 +33,14 @@ import com.google.api.server.spi.response.UnauthorizedException;
 	    scopes = {
 	        "https://www.googleapis.com/auth/userinfo.email" }
 )
-public class FlagsEndpoint {
+public class PhotoCasesEndpoint {
 
 	/**
 	 * Creates and saves a new photo case
 	 * @param photoCase: The photo case to be created
 	 * @return
 	 */
-	@ApiMethod(name="flags.create",
+	@ApiMethod(name="photocases.create",
 			path="photocases/")
 	public PhotoCase createPhotoCase(com.google.appengine.api.users.User user, HttpServletRequest req, PhotoCase photoCase) throws UnauthorizedException{
 		if (user == null) throw new UnauthorizedException("Client application is not authorized");
@@ -66,7 +66,7 @@ public class FlagsEndpoint {
 	 * Returns a list of all photo cases
 	 * @return
 	 */
-	@ApiMethod(name="flags.list",
+	@ApiMethod(name="photocases.list",
 			path="photocases/")
 	public Collection<PhotoCase> listAllPhotoCases(com.google.appengine.api.users.User user, HttpServletRequest req) throws UnauthorizedException {
 		if (user == null) throw new UnauthorizedException("Client application is not authorized");
@@ -86,7 +86,7 @@ public class FlagsEndpoint {
 	 * @param photoCase
 	 * @return
 	 */
-	@ApiMethod(name="flags.update",
+	@ApiMethod(name="photocases.update",
 			path="photocases/{photoCaseId}")
 	public PhotoCase updatePhotoCase(com.google.appengine.api.users.User user, HttpServletRequest req, @Named("photoCaseId") String photoCaseIdAsString, PhotoCase photoCase) throws UnauthorizedException{
 		if (user == null) throw new UnauthorizedException("Client application is not authorized");

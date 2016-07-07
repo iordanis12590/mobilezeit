@@ -246,6 +246,32 @@ public class PhotosEndpoint {
 		client.addSkippedPhotoId(photoId);
 		return result;
 	}
+	
+	/**
+	 *  returns all images of all sizes from a photo, or only the sizes defined
+	 * @param photoIdAsString
+	 * @return
+	 */
+	@ApiMethod(name="images", httpMethod="get", path="photos/{photoId}/images")
+	public Collection<Image> listAllImages(com.google.appengine.api.users.User user, @Named("photoId")String photoIdAsString, @Named("imageSizes") @Nullable PhotoSize[] sizes) throws UnauthorizedException{
+		if (user == null) throw new UnauthorizedException("Client application is not authorized");
+		PhotoManager photoManager = PhotoManager.getInstance();
+		PhotoId photoId = PhotoId.getIdFromString(photoIdAsString);
+		Photo photo = photoManager.getPhotoFromId(photoId);
+		Collection<Image> result = new ArrayList<Image>();
+		// Check if the client requests only some particular sizes
+		if(sizes != null) {
+			for(PhotoSize size: sizes) {
+				result.add(photo.getImage(size));
+			}
+		} else {
+			// Return all available sizes
+			for(PhotoSize photoSize: PhotoSize.values()) {
+				result.add(photo.getImage(photoSize));
+			}
+		}
+		return result;
+	}
 
 }
 
