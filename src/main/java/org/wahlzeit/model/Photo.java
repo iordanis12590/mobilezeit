@@ -102,6 +102,7 @@ public class Photo extends DataObject {
 	protected boolean ownerNotifyAboutPraise = false;
 	protected EmailAddress ownerEmailAddress = EmailAddress.EMPTY;
 	protected Language ownerLanguage = Language.ENGLISH;
+	protected String ownerNickName;
 	@Ignore
 	protected String praisingClientId;
 
@@ -279,6 +280,21 @@ public class Photo extends DataObject {
 	 */
 	public void setOwnerEmailAddress(EmailAddress newEmailAddress) {
 		ownerEmailAddress = newEmailAddress;
+		incWriteCount();
+	}
+	
+	/**
+	 * @methodtype get
+	 */
+	public String getOwnerNickName() {
+		return ownerNickName;
+	}
+	
+	/**
+	 * @methodtype set
+	 */
+	public void setOwnerNickName(String nickName) {
+		ownerNickName = nickName;
 		incWriteCount();
 	}
 

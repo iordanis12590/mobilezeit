@@ -222,7 +222,7 @@ public class User extends Client {
 	 */
 	public void addPhoto(Photo newPhoto) {
 		photos.add(newPhoto);
-
+		newPhoto.setOwnerNickName(nickName);
 		newPhoto.setOwnerId(id);
 		newPhoto.setOwnerNotifyAboutPraise(notifyAboutPraise);
 		newPhoto.setOwnerEmailAddress(emailAddress);
